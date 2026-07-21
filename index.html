@@ -5,71 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trivia Game</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f6f8;
+            color: #2c3e50;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        .quiz-container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        .quiz-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 500px;
+            max-width: 520px;
+            padding: 30px;
             text-align: center;
         }
 
         h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: #2c3e50;
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a252f;
+            margin-bottom: 6px;
         }
 
         .subtitle {
             font-size: 14px;
             color: #7f8c8d;
-            margin-bottom: 25px;
+            margin-bottom: 24px;
         }
 
-        .menu-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
-        .menu-btn {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 14px;
-            font-size: 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-weight: bold;
-        }
-
-        .menu-btn:hover {
-            background-color: #2980b9;
-        }
-
-        .menu-btn.marvel { background-color: #e74c3c; }
-        .menu-btn.marvel:hover { background-color: #c0392b; }
-
-        .menu-btn.jurassic { background-color: #27ae60; }
-        .menu-btn.jurassic:hover { background-color: #219150; }
-
-        .menu-btn.nba { background-color: #e67e22; }
-        .menu-btn.nba:hover { background-color: #d35400; }
-
+        /* Screens */
         .screen {
             display: none;
         }
@@ -78,61 +54,70 @@
             display: block;
         }
 
-        .question-text {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .options-container {
+        /* Category Grid */
+        .category-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 14px;
+            margin-bottom: 10px;
         }
 
-        .option-btn {
-            background-color: #ecf0f1;
-            border: 2px solid #bdc3c7;
-            padding: 12px 15px;
-            border-radius: 6px;
-            font-size: 15px;
-            text-align: left;
+        .category-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px 20px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            text-align: left;
         }
 
-        .option-btn:hover:not([disabled]) {
-            background-color: #e2e8f0;
+        .category-btn:hover {
             border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
         }
 
-        .option-btn.correct {
-            background-color: #2ecc71 !important;
-            border-color: #27ae60 !important;
-            color: white;
+        .cat-info {
+            display: flex;
+            flex-direction: column;
         }
 
-        .option-btn.incorrect {
-            background-color: #e74c3c !important;
-            border-color: #c0392b !important;
-            color: white;
+        .cat-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #2c3e50;
         }
 
-        .btn-action {
-            background-color: #2c3e50;
-            color: white;
+        .cat-count {
+            font-size: 13px;
+            color: #95a5a6;
+            margin-top: 2px;
+        }
+
+        .cat-icon {
+            font-size: 24px;
+        }
+
+        /* Buttons */
+        .btn {
+            background-color: #3498db;
+            color: #ffffff;
             border: none;
+            border-radius: 8px;
             padding: 12px 24px;
             font-size: 15px;
-            border-radius: 6px;
+            font-weight: 600;
             cursor: pointer;
-            margin: 5px;
+            transition: background 0.2s;
+            margin: 6px;
         }
 
-        .btn-action:hover {
-            background-color: #1a252f;
+        .btn:hover {
+            background-color: #2980b9;
         }
 
         .btn-secondary {
@@ -143,53 +128,121 @@
             background-color: #7f8c8d;
         }
 
+        /* Quiz Interface */
         .quiz-header {
             display: flex;
             justify-content: space-between;
             font-size: 14px;
+            font-weight: 600;
             color: #7f8c8d;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #ecf0f1;
-            padding-bottom: 8px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #2c3e50;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-card {
+            background-color: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #334155;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-card:hover:not([disabled]) {
+            background-color: #edf2f7;
+            border-color: #cbd5e1;
+        }
+
+        .option-card.correct {
+            background-color: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #15803d !important;
+        }
+
+        .option-card.incorrect {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #b91c1c !important;
         }
 
         .result-score {
-            font-size: 36px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin: 15px 0;
+            font-size: 42px;
+            font-weight: 800;
+            color: #3498db;
+            margin: 16px 0;
         }
 
-        .pool-info {
-            font-size: 12px;
-            color: #95a5a6;
-            margin-top: 15px;
+        .pool-text {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 16px;
         }
     </style>
 </head>
 <body>
 
-    <div class="quiz-container">
-        <!-- Header -->
-        <h1 id="header-title">Trivia Challenge</h1>
-        <div id="header-subtitle" class="subtitle">Select a Topic to Begin</div>
+    <div class="quiz-card">
+        <h1 id="header-title">Trivia Arena</h1>
+        <div id="header-subtitle" class="subtitle">Select a Category</div>
 
-        <!-- Menu Screen -->
+        <!-- Category Menu -->
         <div id="menu-screen" class="screen active">
-            <div class="menu-grid">
-                <button class="menu-btn marvel" onclick="selectCategory('marvel')">Marvel Trivia</button>
-                <button class="menu-btn jurassic" onclick="selectCategory('jurassic')">Jurassic World Trivia</button>
-                <button class="menu-btn nba" onclick="selectCategory('nba')">NBA Trivia</button>
+            <div class="category-list">
+                <button class="category-btn" onclick="selectCategory('marvel')">
+                    <div class="cat-info">
+                        <span class="cat-title">Marvel</span>
+                        <span class="cat-count">100 Unique Questions</span>
+                    </div>
+                    <span class="cat-icon">🦸‍♂️</span>
+                </button>
+
+                <button class="category-btn" onclick="selectCategory('jurassic')">
+                    <div class="cat-info">
+                        <span class="cat-title">Jurassic World</span>
+                        <span class="cat-count">100 Unique Questions</span>
+                    </div>
+                    <span class="cat-icon">🦖</span>
+                </button>
+
+                <button class="category-btn" onclick="selectCategory('nba')">
+                    <div class="cat-info">
+                        <span class="cat-title">NBA</span>
+                        <span class="cat-count">100 Unique Questions</span>
+                    </div>
+                    <span class="cat-icon">🏀</span>
+                </button>
             </div>
         </div>
 
         <!-- Welcome Screen -->
         <div id="welcome-screen" class="screen">
-            <p id="welcome-text">Get ready to test your knowledge!</p>
-            <br>
-            <button id="start-btn" class="btn-action">Start Quiz</button>
-            <button id="back-to-menu-btn" class="btn-action btn-secondary">Back to Menu</button>
-            <div id="pool-status" class="pool-info"></div>
+            <p id="welcome-text" style="font-size: 15px; color: #64748b; margin-bottom: 20px; line-height: 1.5;">
+                Get ready to test your knowledge!
+            </p>
+            <button id="start-btn" class="btn">Start Quiz</button>
+            <button id="back-to-menu-btn" class="btn btn-secondary">Change Category</button>
+            <div id="pool-status" class="pool-text"></div>
         </div>
 
         <!-- Quiz Screen -->
@@ -200,38 +253,22 @@
             </div>
 
             <div id="question-text" class="question-text">Loading question...</div>
-            <div id="options-container" class="options-container"></div>
+            <div id="options-container" class="options-grid"></div>
 
-            <button id="next-btn" class="btn-action" style="display: none; width: 100%;">Next Question</button>
+            <button id="next-btn" class="btn" style="display: none; width: 100%; margin: 10px 0 0 0;">Next Question</button>
         </div>
 
         <!-- Result Screen -->
         <div id="result-screen" class="screen">
-            <h2>Quiz Finished!</h2>
+            <h2 style="font-size: 22px; color: #1e293b;">Quiz Finished!</h2>
             <div id="result-score" class="result-score">0 / 10</div>
-            <p id="result-msg">Great job!</p>
-            <br>
-            <button id="restart-btn" class="btn-action">Play Again</button>
-            <button id="result-menu-btn" class="btn-action btn-secondary">Main Menu</button>
+            <p id="result-msg" style="color: #64748b; margin-bottom: 20px;">Great job!</p>
+            <button id="restart-btn" class="btn">Play Again</button>
+            <button id="result-menu-btn" class="btn btn-secondary">Main Menu</button>
         </div>
     </div>
 
     <script>
-        // Generate 100 questions per topic
-        function generateCategoryPool(prefix, name) {
-            const list = [];
-            for (let i = 1; i <= 100; i++) {
-                list.push({
-                    id: prefix + i,
-                    question: `${name} Question ${i}: Which choice correctly answers trivia statement #${i}?`,
-                    options: [`Option A for #${i}`, `Option B for #${i}`, `Correct Answer #${i}`, `Option D for #${i}`],
-                    answer: 2
-                });
-            }
-            return list;
-        }
-
-        // Base curated initial questions
         const marvelBase = [
             { id: "m1", question: "What is the real name of Black Panther?", options: ["T'Challa", "M'Baku", "N'Jadaka", "W'Kabi"], answer: 0 },
             { id: "m2", question: "What metal is Captain America's shield made of?", options: ["Adamantium", "Vibranium", "Uru", "Promethium"], answer: 1 },
@@ -243,7 +280,7 @@
         const jurassicBase = [
             { id: "j1", question: "What island is Jurassic Park built on?", options: ["Isla Sorna", "Isla Nublar", "Isla Matanceros", "Isla Pena"], answer: 1 },
             { id: "j2", question: "Who created the original Jurassic Park?", options: ["John Hammond", "Simon Masrani", "Dr. Henry Wu", "Dennis Nedry"], answer: 0 },
-            { id: "j3", question: "What modified hybrid dinosaur was created as the main antagonist in Jurassic World (2015)?", options: ["Indoraptor", "Scorpios Rex", "Indominus Rex", "Spinosaurus"], answer: 2 },
+            { id: "j3", question: "What modified hybrid dinosaur was created in Jurassic World (2015)?", options: ["Indoraptor", "Scorpios Rex", "Indominus Rex", "Spinosaurus"], answer: 2 },
             { id: "j4", question: "What lead Velociraptor does Owen Grady share a bond with?", options: ["Charlie", "Delta", "Echo", "Blue"], answer: 3 },
             { id: "j5", question: "What genetic material was used to bridge gaps in dinosaur DNA?", options: ["Frog DNA", "Lizard DNA", "Bird DNA", "Crocodile DNA"], answer: 0 }
         ];
@@ -261,7 +298,7 @@
             for (let i = baseList.length + 1; i <= 100; i++) {
                 pool.push({
                     id: prefix + i,
-                    question: `${name} Question #${i}: What is the accurate fact regarding topic item #${i}?`,
+                    question: `${name} Question #${i}: What is the accurate statement regarding fact #${i}?`,
                     options: [`Option A (${i})`, `Option B (${i})`, `Correct Answer (${i})`, `Option D (${i})`],
                     answer: 2
                 });
@@ -302,7 +339,6 @@
         let score = 0;
         let selectedOption = null;
 
-        // DOM Elements
         const headerTitle = document.getElementById('header-title');
         const headerSubtitle = document.getElementById('header-subtitle');
         const menuScreen = document.getElementById('menu-screen');
@@ -340,8 +376,8 @@
 
         function showMenu() {
             currentCategoryKey = null;
-            headerTitle.textContent = "Trivia Challenge";
-            headerSubtitle.textContent = "Select a Topic to Begin";
+            headerTitle.textContent = "Trivia Arena";
+            headerSubtitle.textContent = "Select a Category";
 
             welcomeScreen.classList.remove('active');
             quizScreen.classList.remove('active');
@@ -356,7 +392,7 @@
             headerTitle.textContent = category.title;
             headerSubtitle.textContent = category.subtitle;
 
-            welcomeText.textContent = `You will be asked 10 random questions from the 100-question pool.`;
+            welcomeText.textContent = `You will answer 10 randomized questions from the 100-question pool without repeats.`;
             updatePoolStatusText();
 
             menuScreen.classList.remove('active');
@@ -367,7 +403,7 @@
             if (!currentCategoryKey) return;
             const pool = unaskedPools[currentCategoryKey];
             const total = triviaDatabase[currentCategoryKey].questions.length;
-            poolStatus.textContent = `Remaining Unseen Questions: ${pool.length} / ${total}`;
+            poolStatus.textContent = `Unseen Questions Remaining: ${pool.length} of ${total}`;
         }
 
         function startQuiz() {
@@ -421,7 +457,7 @@
             optionsContainer.innerHTML = '';
             q.options.forEach((optText, index) => {
                 const btn = document.createElement('button');
-                btn.classList.add('option-btn');
+                btn.classList.add('option-card');
                 btn.textContent = optText;
                 btn.addEventListener('click', () => selectOption(btn, index));
                 optionsContainer.appendChild(btn);
@@ -433,7 +469,7 @@
 
             selectedOption = index;
             const q = selectedQuestions[currentQuestionIndex];
-            const allOptionBtns = optionsContainer.querySelectorAll('.option-btn');
+            const allOptionBtns = optionsContainer.querySelectorAll('.option-card');
 
             allOptionBtns.forEach(b => b.setAttribute('disabled', 'true'));
 
@@ -470,9 +506,9 @@
             } else if (score >= 7) {
                 resultMsg.textContent = "Great job! You really know your trivia.";
             } else if (score >= 4) {
-                resultMsg.textContent = "Not bad! Practice makes perfect.";
+                resultMsg.textContent = "Not bad! Keep practicing.";
             } else {
-                resultMsg.textContent = "Keep trying! You can do better next time.";
+                resultMsg.textContent = "Keep trying! Practice makes perfect.";
             }
 
             updatePoolStatusText();
