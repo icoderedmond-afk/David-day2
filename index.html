@@ -1,351 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Trivia Challenge</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-red: #e62429;
-            --primary-dark-red: #9f1115;
-            --primary-gold: #fbc02d;
-            --theme-dark: #151515;
-            --theme-grey: #202020;
-            --theme-light-grey: #333333;
-            --theme-white: #f0f0f0;
-            
-            /* Dynamic Accent Colors */
-            --accent-color: #e62429;
-            --accent-border: #fbc02d;
-            --accent-shadow: #9f1115;
-        }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--theme-dark);
-            color: var(--theme-white);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-image: 
-                radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 60%),
-                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
-            padding: 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 680px;
-            background: var(--theme-grey);
-            border: 3px solid var(--accent-color);
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--accent-color);
-            overflow: hidden;
-            position: relative;
-            transition: border-color 0.4s ease;
-        }
-
-        header {
-            background-color: var(--accent-color);
-            padding: 20px;
-            text-align: center;
-            border-bottom: 4px solid var(--accent-border);
-            position: relative;
-            transition: background-color 0.4s ease, border-color 0.4s ease;
-        }
-
-        h1 {
-            font-family: 'Bangers', cursive;
-            font-size: 3rem;
-            letter-spacing: 2px;
-            color: #fff;
-            text-shadow: 3px 3px 0px #000;
-            text-transform: uppercase;
-        }
-
-        .subtitle {
-            font-size: 0.95rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            color: var(--accent-border);
-            text-transform: uppercase;
-            margin-top: 5px;
-            transition: color 0.4s ease;
-        }
-
-        .card-body {
-            padding: 25px;
-        }
-
-        /* Screen States */
-        .screen {
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        /* Menu Screen */
-        .menu-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 20px;
-            color: #fff;
-        }
-
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .category-card {
-            background: var(--theme-light-grey);
-            border: 2px solid #444;
-            border-radius: 10px;
-            padding: 20px 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .category-card:hover {
-            transform: translateY(-5px);
-            border-color: #fff;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-        }
-
-        .category-card .icon {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        .category-card .cat-title {
-            font-family: 'Bangers', cursive;
-            font-size: 1.6rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .category-card .cat-desc {
-            font-size: 0.8rem;
-            color: #aaa;
-            margin-top: 5px;
-        }
-
-        .category-card.marvel-card:hover {
-            border-color: #e62429;
-            background: #2a1516;
-        }
-
-        .category-card.jurassic-card:hover {
-            border-color: #2e7d32;
-            background: #142415;
-        }
-
-        .category-card.nba-card:hover {
-            border-color: #f57c00;
-            background: #2a1f14;
-        }
-
-        /* Welcome Screen */
-        .welcome-screen {
-            text-align: center;
-        }
-
-        .welcome-screen p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin-bottom: 25px;
-            color: #ccc;
-        }
-
-        .pool-info {
-            margin-top: 15px;
-            font-size: 0.85rem;
-            color: var(--accent-border);
-            font-style: italic;
-        }
-
-        .btn {
-            background: var(--accent-color);
-            color: white;
-            font-family: 'Bangers', cursive;
-            font-size: 1.5rem;
-            letter-spacing: 1px;
-            padding: 12px 28px;
-            border: 2px solid var(--accent-border);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 0 var(--accent-shadow);
-            text-transform: uppercase;
-            display: inline-block;
-            margin: 5px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 0 var(--accent-shadow);
-            filter: brightness(1.1);
-        }
-
-        .btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 var(--accent-shadow);
-        }
-
-        .btn-secondary {
-            background: #444;
-            border-color: #777;
-            box-shadow: 0 4px 0 #222;
-        }
-
-        .btn-secondary:hover {
-            background: #555;
-            box-shadow: 0 6px 0 #222;
-        }
-
-        /* Quiz Screen */
-        .quiz-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            color: #aaa;
-            border-bottom: 1px solid var(--theme-light-grey);
-            padding-bottom: 10px;
-        }
-
-        .score-tracker {
-            color: var(--accent-border);
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 8px;
-            background-color: var(--theme-light-grey);
-            border-radius: 4px;
-            margin-bottom: 25px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background-color: var(--accent-border);
-            transition: width 0.3s ease;
-        }
-
-        .question-text {
-            font-size: 1.3rem;
-            font-weight: 700;
-            line-height: 1.4;
-            margin-bottom: 25px;
-            color: #fff;
-        }
-
-        .options-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .option-btn {
-            background: var(--theme-light-grey);
-            border: 2px solid #444;
-            color: #fff;
-            padding: 14px 18px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .option-btn:hover:not([disabled]) {
-            border-color: var(--accent-border);
-            background: #3d3d3d;
-            transform: translateX(4px);
-        }
-
-        .option-btn.correct {
-            background-color: #2e7d32 !important;
-            border-color: #4caf50 !important;
-            color: #fff;
-        }
-
-        .option-btn.incorrect {
-            background-color: #c62828 !important;
-            border-color: #ef5350 !important;
-            color: #fff;
-        }
-
-        .next-btn-container {
-            margin-top: 25px;
-            text-align: right;
-        }
-
-        /* Result Screen */
-        .result-screen {
-            text-align: center;
-        }
-
-        .result-score {
-            font-family: 'Bangers', cursive;
-            font-size: 4rem;
-            color: var(--accent-border);
-            margin: 15px 0;
-            text-shadow: 2px 2px 0 #000;
-        }
-
-        .result-title {
-            font-size: 1.8rem;
-            font-weight: 900;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .result-msg {
-            color: #ccc;
-            margin-bottom: 25px;
-            font-size: 1.1rem;
-            line-height: 1.5;
-        }
-
-        /* Footer */
-        footer {
-            margin-top: 20px;
-            font-size: 0.8rem;
-            color: #777;
-            text-align: center;
-        }
-
-        @media (max-width: 500px) {
-            h1 { font-size: 2.2rem; }
-            .question-text { font-size: 1.1rem; }
             .option-btn { font-size: 0.95rem; padding: 12px; }
             .category-grid { grid-template-columns: 1fr; }
         }
@@ -426,7 +79,7 @@
     </footer>
 
     <script>
-        // Master Database categorized by domain
+        // Master Database with heavily expanded question pools
         const triviaDatabase = {
             marvel: {
                 title: "MARVEL TRIVIA",
@@ -446,10 +99,20 @@
                     { id: "m9", question: "Which weapon does Thor forge in 'Avengers: Infinity War'?", options: ["Mjolnir", "Jarnbjorn", "Thunderstrike", "Stormbreaker"], answer: 3 },
                     { id: "m10", question: "Who was responsible for creating the Avengers Initiative?", options: ["Tony Stark", "Nick Fury", "Alexander Pierce", "Phil Coulson"], answer: 1 },
                     { id: "m11", question: "What is Peter Parker's best friend's name in the MCU Spider-Man trilogy?", options: ["Harry Osborn", "Ned Leeds", "Flash Thompson", "Miles Morales"], answer: 1 },
-                    { id: 12, question: "What realm is Loki from by birth?", options: ["Asgard", "Jotunheim", "Vanaheim", "Nidavellir"], answer: 1 },
+                    { id: "m12", question: "What realm is Loki from by birth?", options: ["Asgard", "Jotunheim", "Vanaheim", "Nidavellir"], answer: 1 },
                     { id: "m13", question: "What species is Rocket from Guardians of the Galaxy?", options: ["Genetically modified raccoon", "Badger", "Red Panda", "Swarley"], answer: 0 },
                     { id: "m14", question: "What metal is fused to Wolverine's skeleton?", options: ["Vibranium", "Promethium", "Adamantium", "Carbonantium"], answer: 2 },
-                    { id: "m15", question: "Who cut off Thanos's head in 'Avengers: Endgame'?", options: ["Captain America", "Iron Man", "Thor", "Captain Marvel"], answer: 2 }
+                    { id: "m15", question: "Who cut off Thanos's head in 'Avengers: Endgame'?", options: ["Captain America", "Iron Man", "Thor", "Captain Marvel"], answer: 2 },
+                    { id: "m16", question: "What is Hawkeye's real name?", options: ["Clint Barton", "Sam Wilson", "Bucky Barnes", "James Rhodes"], answer: 0 },
+                    { id: "m17", question: "Which Infinity Stone was housed inside the Tesseract?", options: ["Space Stone", "Mind Stone", "Power Stone", "Reality Stone"], answer: 0 },
+                    { id: "m18", question: "Where did Thanos acquire the Soul Stone?", options: ["Xandar", "Titan", "Vormir", "Knowhere"], answer: 2 },
+                    { id: "m19", question: "What song does Peter Quill dance to in the opening scene of Guardians of the Galaxy?", options: ["Hooked on a Feeling", "Come and Get Your Love", "Cherry Bomb", "Mr. Blue Sky"], answer: 1 },
+                    { id: "m20", question: "Who directed 'Thor: Ragnarok'?", options: ["Taika Waititi", "James Gunn", "Russo Brothers", "Jon Favreau"], answer: 0 },
+                    { id: "m21", question: "What is the alias of Bucky Barnes after his brainwashing?", options: ["The Falcon", "The Winter Soldier", "Red Guardian", "U.S. Agent"], answer: 1 },
+                    { id: "m22", question: "What species is Groot?", options: ["Flora colossus", "Kree", "Chitauri", "Centaurian"], answer: 0 },
+                    { id: "m23", question: "What is Shang-Chi's weapon system called?", options: ["Ten Rings", "Ten Swords", "Dragon Staff", "Shadow Blade"], answer: 0 },
+                    { id: "m24", question: "Who is Moon Knight's Egyptian patron deity?", options: ["Anubis", "Khonshu", "Ra", "Osiris"], answer: 1 },
+                    { id: "m25", question: "What is Wanda Maximoff's superhero moniker?", options: ["Scarlet Witch", "Clea", "Polaris", "Enchantress"], answer: 0 }
                 ]
             },
             jurassic: {
@@ -468,7 +131,17 @@
                     { id: "j7", question: "What genetic material was used to bridge the gaps in the dinosaur DNA sequence?", options: ["Frog DNA", "Lizard DNA", "Bird DNA", "Crocodile DNA"], answer: 0 },
                     { id: "j8", question: "What corporation bought InGen and built Jurassic World?", options: ["BioSyn", "Masrani Global", "InGen Security", "Mantah Corp"], answer: 1 },
                     { id: "j9", question: "Which hybrid dinosaur was designed for military combat in 'Jurassic World: Fallen Kingdom'?", options: ["Indominus Rex", "Indoraptor", "Stegoceratops", "Atrociraptor"], answer: 1 },
-                    { id: "j10", question: "What iconic phrase does Ian Malcolm repeat regarding nature?", options: ["Life finds a way", "Dinosaurs rule the earth", "Evolution is absolute", "Nature always wins"], answer: 0 }
+                    { id: "j10", question: "What iconic phrase does Ian Malcolm repeat regarding nature?", options: ["Life finds a way", "Dinosaurs rule the earth", "Evolution is absolute", "Nature always wins"], answer: 0 },
+                    { id: "j11", question: "What island is known as Site B where dinosaurs were bred in the wild?", options: ["Isla Nublar", "Isla Sorna", "Isla Muerta", "Isla Tacaño"], answer: 1 },
+                    { id: "j12", question: "What type of dinosaur is the apex predator in Jurassic Park III?", options: ["T-Rex", "Spinosaurus", "Carnotaurus", "Allosaurus"], answer: 1 },
+                    { id: "j13", question: "What vehicle device does Dennis Nedry use to hide stolen dinosaur embryos?", options: ["Barbasol Shaving Cream Can", "Camera Lens", "Thermos Flask", "Flashlight"], answer: 0 },
+                    { id: "j14", question: "Who was the CEO of BioSyn Genetics in Jurassic World Dominion?", options: ["Lewis Dodgson", "Dr. Henry Wu", "Vic Hoskins", "Eli Mills"], answer: 0 },
+                    { id: "j15", question: "What large insect plague was created by BioSyn in Jurassic World Dominion?", options: ["Giant Locusts", "Giant Mosquitoes", "Killer Bees", "Prehistoric Beetles"], answer: 0 },
+                    { id: "j16", question: "What dinosaur spit venom and blinded Dennis Nedry?", options: ["Dilophosaurus", "Compsognathus", "Proceratosaurus", "Gallimimus"], answer: 0 },
+                    { id: "j17", question: "What was Claire Dearing's job position in the 2015 Jurassic World park?", options: ["Senior Operations Manager", "Head Veterinarian", "Lead Security Director", "PR Specialist"], answer: 0 },
+                    { id: "j18", question: "What small, social dinosaur species swarms in packs in Jurassic Park: The Lost World?", options: ["Compsognathus", "Troodon", "Microceratus", "Dimorphodon"], answer: 0 },
+                    { id: "j19", question: "What flying reptile attacks visitors in Jurassic World's Main Street?", options: ["Pteranodon", "Quetzalcoatlus", "Tapejara", "Archaeopteryx"], answer: 0 },
+                    { id: "j20", question: "Which character is played by Laura Dern in the Jurassic franchise?", options: ["Dr. Ellie Sattler", "Claire Dearing", "Lex Murphy", "Dr. Sarah Harding"], answer: 0 }
                 ]
             },
             nba: {
@@ -487,7 +160,17 @@
                     { id: "n7", question: "Which NBA player earned the nickname 'The Greek Freak'?", options: ["Nikola Jokić", "Luka Dončić", "Giannis Antetokounmpo", "Kristaps Porziņģis"], answer: 2 },
                     { id: "n8", question: "How long is the NBA shot clock during standard gameplay?", options: ["20 seconds", "24 seconds", "30 seconds", "35 seconds"], answer: 1 },
                     { id: "n9", question: "Which player won unanimous MVP honors in the 2015-2016 NBA season?", options: ["Stephen Curry", "LeBron James", "Kevin Durant", "James Harden"], answer: 0 },
-                    { id: "n10", question: "What team is known as 'Spurs'?", options: ["Dallas", "San Antonio", "Houston", "Phoenix"], answer: 1 }
+                    { id: "n10", question: "What team is known as the 'Spurs'?", options: ["Dallas", "San Antonio", "Houston", "Phoenix"], answer: 1 },
+                    { id: "n11", question: "Who holds the record for the most NBA MVP awards in history (6)?", options: ["Michael Jordan", "Kareem Abdul-Jabbar", "Bill Russell", "LeBron James"], answer: 1 },
+                    { id: "n12", question: "Which NBA coach won 11 championship rings (9 with Boston Celtics as a player/coach)?", options: ["Red Auerbach", "Phil Jackson", "Bill Russell", "Gregg Popovich"], answer: 2 },
+                    { id: "n13", question: "Which team completed a 3-1 comeback in the 2016 NBA Finals?", options: ["Cleveland Cavaliers", "Golden State Warriors", "Miami Heat", "Toronto Raptors"], answer: 0 },
+                    { id: "n14", question: "Who holds the record for most career triple-doubles in NBA history?", options: ["Oscar Robertson", "Russell Westbrook", "Magic Johnson", "Nikola Jokić"], answer: 1 },
+                    { id: "n15", question: "What year was the NBA founded?", options: ["1939", "1946", "1950", "1962"], answer: 1 },
+                    { id: "n16", question: "Who was nicknamed 'The Answer'?", options: ["Allen Iverson", "Tracy McGrady", "Vince Carter", "Paul Pierce"], answer: 0 },
+                    { id: "n17", question: "Which team won the inaugural NBA In-Season Tournament (Cup)?", options: ["Los Angeles Lakers", "Indiana Pacers", "Boston Celtics", "Denver Nuggets"], answer: 0 },
+                    { id: "n18", question: "Who holds the record for most 3-pointers made in NBA history?", options: ["Ray Allen", "Stephen Curry", "Reggie Miller", "James Harden"], answer: 1 },
+                    { id: "n19", question: "Which player was nicknamed 'The Mailman'?", options: ["Karl Malone", "Charles Barkley", "Patrick Ewing", "David Robinson"], answer: 0 },
+                    { id: "n20", question: "What college did Tim Duncan attend before entering the NBA?", options: ["Wake Forest", "Duke", "North Carolina", "Kentucky"], answer: 0 }
                 ]
             }
         };
@@ -496,10 +179,18 @@
         
         // Track unasked question pools independently for each category
         const unaskedPools = {
-            marvel: [...triviaDatabase.marvel.questions],
-            jurassic: [...triviaDatabase.jurassic.questions],
-            nba: [...triviaDatabase.nba.questions]
+            marvel: [],
+            jurassic: [],
+            nba: []
         };
+
+        // Initialize / Refresh Pools
+        function refreshPool(catKey) {
+            unaskedPools[catKey] = [...triviaDatabase[catKey].questions];
+        }
+
+        // Initialize all pools at start
+        Object.keys(triviaDatabase).forEach(cat => refreshPool(cat));
 
         let currentCategoryKey = null;
         let selectedQuestions = [];
@@ -543,11 +234,18 @@
         restartBtn.addEventListener('click', startQuiz);
         resultMenuBtn.addEventListener('click', showMenu);
 
-        // Utility: Fisher-Yates Shuffle
+        // Enhanced Fisher-Yates Shuffle with Crypto Random when available
         function shuffleArray(array) {
             const arr = [...array];
             for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
+                let j;
+                if (window.crypto && window.crypto.getRandomValues) {
+                    const randomBuf = new Uint32Array(1);
+                    window.crypto.getRandomValues(randomBuf);
+                    j = Math.floor((randomBuf[0] / (0xFFFFFFFF + 1)) * (i + 1));
+                } else {
+                    j = Math.floor(Math.random() * (i + 1));
+                }
                 [arr[i], arr[j]] = [arr[j], arr[i]];
             }
             return arr;
@@ -584,7 +282,7 @@
             headerSubtitle.textContent = category.subtitle;
 
             // Setup Welcome text
-            welcomeText.textContent = `Test your knowledge in ${category.title}! Answer ${QUESTIONS_PER_QUIZ} random questions with no repeats.`;
+            welcomeText.textContent = `Test your knowledge in ${category.title}! Answer ${QUESTIONS_PER_QUIZ} random questions with zero repeats until the entire bank is exhausted.`;
             updatePoolStatusText();
 
             // Switch Screen
@@ -612,7 +310,7 @@
 
             // Reset pool if remaining questions are fewer than required for a round
             if (pool.length < QUESTIONS_PER_QUIZ) {
-                unaskedPools[currentCategoryKey] = [...masterList];
+                refreshPool(currentCategoryKey);
                 pool = unaskedPools[currentCategoryKey];
             }
 
