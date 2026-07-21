@@ -1,1004 +1,730 @@
-# Let's create a Python script that generates a rich, interactive, standalone index.html file with:
-# 1. Menu screen with subject selection: Marvel, Jurassic World, NBA.
-# 2. At least 100 high-quality, fun trivia questions for EACH category (300+ total questions!).
-# 3. Random question generator for quiz sessions (e.g. 10 random questions per round, or continuous random mode).
-# 4. Interactive UI with feedback, timer option, score keeping, streak counters, explanation notes, and sleek modern design.
-
-import json
-
-# Generate Marvel Questions (100+)
-marvel_questions = [
-    {"q": "What is the real name of Black Panther?", "a": ["T'Challa", "M'Baku", "N'Jadaka", "W'Kabi"], "c": 0, "exp": "T'Challa is the King of Wakanda and holds the mantle of Black Panther."},
-    {"q": "What metal is Captain America's shield made of?", "a": ["Adamantium", "Vibranium", "Uru", "Titanium alloy"], "c": 1, "exp": "Captain America's shield is forged from Vibranium, native to Wakanda."},
-    {"q": "What is Thor's iconic hammer named?", "a": ["Stormbreaker", "Mjolnir", "Jarnbjorn", "Gungnir"], "c": 1, "exp": "Mjolnir was forged in the heart of a dying star by Dwarves."},
-    {"q": "Who is Tony Stark's father?", "a": ["Howard Stark", "Morgan Stark", "Edward Stark", "Arthur Stark"], "c": 0, "exp": "Howard Stark was a co-founder of Stark Industries and S.H.I.E.L.D."},
-    {"q": "Which Infinity Stone controls time?", "a": ["Space Stone", "Mind Stone", "Time Stone", "Reality Stone"], "c": 2, "exp": "The Time Stone was housed within the Eye of Agamotto by Doctor Strange."},
-    {"q": "What species is Groot?", "a": ["Kree", "Flora Colossus", "Skrull", "Centaurian"], "c": 1, "exp": "Groot is a Flora colossus from Planet X."},
-    {"q": "What is Peter Parker's aunt's name?", "a": ["Aunt May", "Aunt Peggy", "Aunt Mary", "Aunt Jane"], "c": 0, "exp": "Aunt May raised Peter Parker after his parents passed away."},
-    {"q": "Who destroyed Thor's hammer Mjolnir in Thor: Ragnarok?", "a": ["Loki", "Hela", "Thanos", "Odin"], "c": 1, "exp": "Hela, the Goddess of Death, crushed Mjolnir with her bare hand."},
-    {"q": "What is the name of the alien race that invades New York in The Avengers (2012)?", "a": ["Skrulls", "Chitauri", "Kree", "Outriders"], "c": 1, "exp": "Loki led the Chitauri invasion of New York."},
-    {"q": "What is Natasha Romanoff's superhero alias?", "a": ["Black Cat", "Black Widow", "Scarlet Witch", "Wasp"], "c": 1, "exp": "Natasha Romanoff was trained in the Red Room as Black Widow."},
-    {"q": "Where is Captain America from?", "a": ["Brooklyn, New York", "Queens, New York", "Manhattan, New York", "Chicago, Illinois"], "c": 0, "exp": "Steve Rogers was born and raised in Brooklyn, NY."},
-    {"q": "What is Doctor Strange's primary sanctuary called in New York?", "a": ["Kamar-Taj", "Sanctum Sanctorum", "Bleecker Manor", "Valhalla"], "c": 1, "exp": "The Sanctum Sanctorum is located at 177A Bleecker Street, Greenwich Village."},
-    {"q": "Who killed Tony Stark's parents?", "a": ["Obadiah Stane", "The Winter Soldier", "Red Skull", "Baron Zemo"], "c": 1, "exp": "Bucky Barnes was brainwashed as the Winter Soldier when he killed the Starks in 1991."},
-    {"q": "What is Wanda Maximoff's superhero name?", "a": ["Clear Sight", "Scarlet Witch", "Shadow Weaver", "Mystique"], "c": 1, "exp": "Wanda Maximoff assumes the title of Scarlet Witch."},
-    {"q": "What artificial intelligence replaced J.A.R.V.I.S. in Avengers: Age of Ultron?", "a": ["K.A.R.E.N.", "F.R.I.D.A.Y.", "E.D.I.T.H.", "H.E.R.B.I.E."], "c": 1, "exp": "F.R.I.D.A.Y. took over after J.A.R.V.I.S. became part of Vision."},
-    {"q": "What realm is Loki natively from?", "a": ["Asgard", "Jotunheim", "Vanaheim", "Alfheim"], "c": 1, "exp": "Loki is the biological son of Laufey, King of the Frost Giants of Jotunheim."},
-    {"q": "What food do the Avengers eat in the post-credits scene of the first Avengers movie?", "a": ["Pizza", "Shawarma", "Tacos", "Burgers"], "c": 1, "exp": "After saving New York, Tony Stark suggests trying shawarma."},
-    {"q": "Who is the villain in Black Panther?", "a": ["Killmonger", "Klaue", "Baron Zemo", "Taskmaster"], "c": 0, "exp": "Erik 'Killmonger' Stevens (N'Jadaka) challenged T'Challa for the throne."},
-    {"q": "What is the name of Peter Parker's high school best friend in the MCU?", "a": ["Ned Leeds", "Harry Osborn", "Flash Thompson", "MJ"], "c": 0, "exp": "Ned Leeds acts as Peter's trusted 'guy in the chair'."},
-    {"q": "Which Doctor Strange spell was used to erase the world's memory of Peter Parker?", "a": ["Runes of Kof-Kol", "Crimson Bands of Cyttorak", "Wands of Watoomb", "Book of Vishanti"], "c": 0, "exp": "The Runes of Kof-Kol altered reality so everyone forgot Peter Parker."},
-]
-
-# Expand Marvel to 100 questions systematically
-marvel_extra_raw = [
-    ("What color is the Power Stone?", ["Purple", "Blue", "Red", "Green"], 0, "The Power Stone is purple and stored in the Orb."),
-    ("What color is the Space Stone inside the Tesseract?", ["Blue", "Yellow", "Green", "Red"], 0, "The Space Stone glows blue within the Tesseract."),
-    ("What color is the Mind Stone on Vision's forehead?", ["Yellow", "Orange", "Red", "Blue"], 0, "The Mind Stone is yellow."),
-    ("What color is the Reality Stone (Aether)?", ["Red", "Purple", "Green", "Orange"], 0, "The Reality Stone takes liquid form as the Red Aether."),
-    ("What color is the Soul Stone?", ["Orange", "Yellow", "Green", "Purple"], 0, "The Soul Stone is orange and required a sacrifice on Vormir."),
-    ("Who sacrificed herself on Vormir in Avengers: Endgame?", ["Black Widow (Natasha)", "Gamora", "Scarlet Witch", "Captain Marvel"], 0, "Natasha Romanoff gave her life so the Avengers could obtain the Soul Stone."),
-    ("Who was sacrificed on Vormir by Thanos in Avengers: Infinity War?", ["Gamora", "Nebula", "Mantis", "Proxima Midnight"], 0, "Thanos threw Gamora off the cliff to gain the Soul Stone."),
-    ("What is the real name of the Falcon?", ["Sam Wilson", "James Rhodes", "Clint Barton", "Scott Lang"], 0, "Sam Wilson operates as Falcon and later becomes Captain America."),
-    ("What is War Machine's real name?", ["James 'Rhodey' Rhodes", "Sam Wilson", "Justin Hammer", "Happy Hogan"], 0, "James Rhodes is an officer in the US Air Force."),
-    ("What tiny subatomic realm does Ant-Man enter?", ["Quantum Realm", "Negative Zone", "Microverse", "Dark Dimension"], 0, "Scott Lang travels to the Quantum Realm."),
-    ("Who played Wolverine in the X-Men films?", ["Hugh Jackman", "Ryan Reynolds", "Tom Hardy", "Christian Bale"], 0, "Hugh Jackman played Wolverine for over two decades."),
-    ("What metal is bonded to Wolverine's skeleton?", ["Adamantium", "Vibranium", "Mithril", "Carbonantium"], 0, "Adamantium is the virtually indestructible alloy on Logan's claws."),
-    ("What is Scott Lang's primary superhero identity?", ["Ant-Man", "Wasp", "Yellowjacket", "Goliath"], 0, "Scott Lang is the second hero to wear the Ant-Man suit."),
-    ("Who created Ant-Man tech and Pym Particles?", ["Hank Pym", "Howard Stark", "Bruce Banner", "Reed Richards"], 0, "Dr. Hank Pym discovered Pym Particles."),
-    ("What agency does Nick Fury direct?", ["S.H.I.E.L.D.", "H.Y.D.R.A.", "S.W.O.R.D.", "D.O.D.C."], 0, "Nick Fury was the director of S.H.I.E.L.D."),
-    ("What evil organization infiltrated S.H.I.E.L.D. from within?", ["H.Y.D.R.A.", "AIM", "The Hand", "Ten Rings"], 0, "HYDRA operated inside S.H.I.E.L.D. since WWII."),
-    ("What is Captain Marvel's real name?", ["Carol Danvers", "Monica Rambeau", "Peggy Carter", "Kamala Khan"], 0, "Carol Danvers was an Air Force test pilot."),
-    ("What alien species can shapeshift in Captain Marvel?", ["Skrulls", "Kree", "Chitauri", "Outriders"], 0, "Skrulls are reptilian shapeshifters."),
-    ("What is the name of Thor's home realm?", ["Asgard", "Midgard", "Nidavellir", "Jotunheim"], 0, "Asgard is the home of the Norse gods in Marvel."),
-    ("What is Earth called in Asgardian terminology?", ["Midgard", "Asgard", "Alfheim", "Vanaheim"], 0, "Earth is one of the Nine Realms known as Midgard."),
-    ("Who is the King of the Dwarves who forged Stormbreaker?", ["Eitri", "Brokk", "Sindri", "Odin"], 0, "Eitri played by Peter Dinklage forged Stormbreaker on Nidavellir."),
-    ("What weapon does Thor forge in Avengers: Infinity War?", ["Stormbreaker", "Mjolnir", "Gungnir", "Thunderbringer"], 0, "Stormbreaker is an axe capable of summoning the Bifrost."),
-    ("What is the name of the rainbow bridge that teleports Asgardians?", ["Bifrost", "Yggdrasil", "Chitauri Gate", "Quantum Bridge"], 0, "The Bifrost connects Asgard to the Nine Realms."),
-    ("Who guards the Bifrost in Asgard?", ["Heimdall", "Skurge", "Volstagg", "Fandral"], 0, "Heimdall can see and hear across all nine realms."),
-    ("What is the name of Peter Parker's aunt's late husband?", ["Uncle Ben", "Uncle Harry", "Uncle Richard", "Uncle Sam"], 0, "Uncle Ben taught Peter that with great power comes great responsibility."),
-    ("What company does Norman Osborn found?", ["Oscorp", "Stark Tech", "Roxxon", "Hammer Tech"], 0, "Norman Osborn founded Oscorp Industries."),
-    ("What villain identity does Norman Osborn adopt?", ["Green Goblin", "Hobgoblin", "Venom", "Doc Ock"], 0, "Norman Osborn becomes the Green Goblin."),
-    ("What arms are attached to Dr. Otto Octavius?", ["Mechanical Tentacles", "Vibranium Wings", "Plasma Cannons", "Cybernetic Legs"], 0, "Doc Ock has four AI-controlled mechanical tentacles."),
-    ("What symbiont merges with Eddie Brock?", ["Venom", "Carnage", "Riot", "Toxin"], 0, "Venom is an alien symbiote."),
-    ("What color is Carnage?", ["Red", "Black", "Green", "Purple"], 0, "Carnage is a red symbiote spawned from Venom and Cletus Kasady."),
-    ("What is Deadpool's real name?", ["Wade Wilson", "Slade Wilson", "Wade Barrett", "Arthur Pendelton"], 0, "Wade Wilson is the Merc with a Mouth."),
-    ("What factor gives Wolverine and Deadpool their rapid healing?", ["Healing Factor", "Super Serum", "Gamma Radiation", "Mutant Spark"], 0, "Both possess a rapid cellular mutant healing factor."),
-    ("What radioactive creature bit Peter Parker?", ["Spider", "Scorpion", "Wasp", "Ant"], 0, "A radioactive spider gave Peter Parker his powers."),
-    ("What giant monster form does Bruce Banner transform into?", ["The Hulk", "Abomination", "Juggernaut", "Thing"], 0, "Bruce Banner turns into the Incredible Hulk when enraged."),
-    ("What type of radiation created the Hulk?", ["Gamma Radiation", "Cosmic Rays", "Alpha Waves", "Quantum Rays"], 0, "Bruce Banner was exposed to intense Gamma radiation."),
-    ("Who is the Blind Lawyer superhero of Hell's Kitchen?", ["Daredevil (Matt Murdock)", "Luke Cage", "Iron Fist", "Punisher"], 0, "Matt Murdock is Daredevil, the Man Without Fear."),
-    ("What vigilante anti-hero wears a skull emblem on his chest?", ["The Punisher (Frank Castle)", "Moon Knight", "Ghost Rider", "Blade"], 0, "Frank Castle is The Punisher."),
-    ("What anti-hero rides a flaming motorcycle with a skull head?", ["Ghost Rider (Johnny Blaze)", "Taskmaster", "Red Skull", "Dormammu"], 0, "Johnny Blaze sold his soul to become Ghost Rider."),
-    ("What half-vampire superhero hunts vampires?", ["Blade (Eric Brooks)", "Morbius", "Moon Knight", "Nightcrawler"], 0, "Blade is the Daywalker."),
-    ("Who is the Marc Spector superhero possessing Egyptian deity powers?", ["Moon Knight", "Khonshu", "Black Knight", "Doctor Fate"], 0, "Marc Spector serves as Moon Knight, avatar of Khonshu."),
-    ("What is the name of the Egyptian Moon God who empowers Moon Knight?", ["Khonshu", "Ra", "Anubis", "Osiris"], 0, "Khonshu gives Moon Knight his gifts."),
-    ("What is Shang-Chi's signature weapon artifact?", ["The Ten Rings", "The Dragon Staff", "Nunchaku of Light", "Vibranium Rings"], 0, "Shang-Chi masters the power of the Ten Rings."),
-    ("What fictional hidden city in China is home to the Great Protector in Shang-Chi?", ["Ta Lo", "K'un-Lun", "Madripoor", "Kamar-Taj"], 0, "Ta Lo is a mystical realm brimming with ancient creatures."),
-    ("What island city is known as a lawless pirate haven in Marvel?", ["Madripoor", "Genosha", "Sokovia", "Latveria"], 0, "Madripoor is a notorious Southeast Asian island city."),
-    ("What European country is ruled by Doctor Doom?", ["Latveria", "Sokovia", "Genosha", "Symkaria"], 0, "Victor von Doom rules Latveria with an iron fist."),
-    ("What European country is destroyed in Avengers: Age of Ultron?", ["Sokovia", "Latveria", "Transylvania", "Vanaheim"], 0, "Sokovia was lifted into the air and destroyed by Ultron."),
-    ("What stretchable hero leads the Fantastic Four?", ["Mr. Fantastic (Reed Richards)", "Invisible Woman", "Human Torch", "The Thing"], 0, "Reed Richards is Mr. Fantastic."),
-    ("What is the real name of The Invisible Woman?", ["Sue Storm", "Jean Grey", "Wanda Maximoff", "Janet van Dyne"], 0, "Susan Storm-Richards can bend light to become invisible."),
-    ("What catchphrase does Johnny Storm say before catching fire?", ["Flame on!", "It's clobberin' time!", "Avengers assemble!", "Snikt!"], 0, "The Human Torch yells 'Flame on!'."),
-    ("What catchphrase does The Thing use when entering battle?", ["It's clobberin' time!", "Hulk smash!", "I can do this all day!", "To infinity!"], 0, "Ben Grimm yells 'It's clobberin' time!'."),
-    ("Who is the main telepathic leader of the X-Men?", ["Professor X (Charles Xavier)", "Magneto", "Cyclops", "Beast"], 0, "Professor Charles Xavier founded the X-Men."),
-    ("What is Magneto's superpower?", ["Magnetic metal manipulation", "Teleportation", "Optic blasts", "Weather control"], 0, "Magneto can control electromagnetic fields and metal."),
-    ("What is Cyclops' power?", ["Optic concussion blasts", "Laser vision", "Fire manipulation", "X-ray sight"], 0, "Scott Summers emits powerful optic concussive beams from his eyes."),
-    ("What weather-controlling mutant is a member of the X-Men?", ["Storm (Ororo Munroe)", "Rogue", "Jean Grey", "Jubilee"], 0, "Ororo Munroe commands atmospheric weather as Storm."),
-    ("What mutant absorbs powers and memories through skin contact?", ["Rogue", "Mystique", "Shadowcat", "Psylocke"], 0, "Rogue drains life energy and powers through direct touch."),
-    ("What telepathic X-Men member hosts the cosmic Phoenix Force?", ["Jean Grey", "Emma Frost", "Storm", "Rogue"], 0, "Jean Grey merges with the cosmic Phoenix Force."),
-    ("What portal-generating X-Men member can phase through solid objects?", ["Kitty Pryde (Shadowcat)", "Blink", "Nightcrawler", "Magik"], 0, "Kitty Pryde can phase herself and others through solid mass."),
-    ("What teleporting blue mutant has a tail and demon-like appearance?", ["Nightcrawler (Kurt Wagner)", "Beast", "Archangel", "Mystique"], 0, "Kurt Wagner teleports leaving a scent of brimstone."),
-    ("What blue furry mutant is a genius scientist for the X-Men?", ["Beast (Hank McCoy)", "Nightcrawler", "Iceman", "Colossus"], 0, "Hank McCoy is Dr. Beast."),
-    ("What mutant can turn his skin into organic steel?", ["Colossus (Piotr Rasputin)", "Juggernaut", "Blob", "Steelhead"], 0, "Colossus converts his body into indestructible organic steel."),
-    ("Who is Thanos' adopted assassin daughter with green skin?", ["Gamora", "Nebula", "Proxima", "Mantiss"], 0, "Gamora is known as the deadliest woman in the galaxy."),
-    ("Who is Gamora's cybernetic sister?", ["Nebula", "Mantis", "Okoye", "Shuri"], 0, "Nebula was augmented by Thanos during her training."),
-    ("What radio/walkman-loving hero leads the Guardians of the Galaxy?", ["Star-Lord (Peter Quill)", "Drax", "Rocket", "Groot"], 0, "Peter Quill goes by Star-Lord."),
-    ("What is the name of Peter Quill's spaceship in Guardians Vol 1 & 2?", ["The Milano", "The Benatar", "The Bowie", "The Enterprise"], 0, "Peter Quill named his ship after Alyssa Milano."),
-    ("What genetically modified raccoon is an expert marksman?", ["Rocket Raccoon", "Meeko", "Sly", "Rigby"], 0, "Rocket is a master tinkerer and marksman."),
-    ("What empathetic Guardian can feel and alter emotions by touch?", ["Mantis", "Gamora", "Phila-Vell", "Nebula"], 0, "Mantis has empathic abilities."),
-    ("What warrior is obsessed with taking revenge on Thanos for his family?", ["Drax the Destroyer", "Ronan", "Korath", "Ego"], 0, "Drax sought vengeance against Ronan and Thanos."),
-    ("Who was Peter Quill's biological father in Guardians of the Galaxy Vol 2?", ["Ego the Living Planet", "Yondu", "The Collector", "Grandmaster"], 0, "Ego is a Celestial entity."),
-    ("Who raised Peter Quill after taking him from Earth?", ["Yondu Udonta", "Ego", "The Collector", "Korath"], 0, "Yondu was leader of the Ravagers who raised Peter."),
-    ("What arrow weapon does Yondu control with his whistle?", ["Yaka Arrow", "Vibranium Dart", "Centaurian Bolt", "Sonic Needle"], 0, "Yondu guides a lethal Yaka Arrow by whistling."),
-    ("What cosmic entity collection collector is based in Knowhere?", ["The Collector (Taneleer Tivan)", "The Grandmaster", "Ego", "High Evolutionary"], 0, "The Collector gathers rare species and artifacts across the universe."),
-    ("What planet/station is constructed inside a dead Celestial head?", ["Knowhere", "Sakaar", "Xandar", "Kree-Lar"], 0, "Knowhere is built inside the severed head of a Celestial."),
-    ("What planet is the homeworld of the Nova Corps?", ["Xandar", "Hala", "Sakaar", "Titan"], 0, "Xandar is defended by the Nova Corps."),
-    ("What garbage planet is ruled by the Grandmaster in Thor: Ragnarok?", ["Sakaar", "Knowhere", "Vormir", "Jotunheim"], 0, "Sakaar hosts the Contest of Champions."),
-    ("What green scientist turns into the champion on Sakaar?", ["Bruce Banner / Hulk", "Abomination", "Korg", "Mephisto"], 0, "Hulk became the revered Gladiator Champion on Sakaar."),
-    ("What rock-skinned Kronan gladiator becomes Thor's buddy?", ["Korg", "Miek", "Thing", "Rockslide"], 0, "Korg is voiced by director Taika Waititi."),
-    ("What insectoid alien is Korg's best friend?", ["Miek", "Bug", "Skitters", "Bumble"], 0, "Miek uses blades on his arms to fight."),
-    ("What sister of T'Challa is the technological genius of Wakanda?", ["Shuri", "Nakia", "Okoye", "Ramonda"], 0, "Shuri designs Wakanda's cutting-edge technology."),
-    ("Who leads the Dora Milaje, Wakanda's royal female guard?", ["Okoye", "Nakia", "Ayo", "Xoliswa"], 0, "General Okoye leads the elite Dora Milaje."),
-    ("What flower gives Black Panther enhanced strength and speed?", ["Heart-Shaped Herb", "Purple Lotus", "Vibranium Blossom", "Nightshade"], 0, "The Heart-Shaped Herb connects Black Panther to the panther goddess Bast."),
-    ("What is the real name of Hawkeye?", ["Clint Barton", "Kate Bishop", "Baron Zemo", "Jack Duquesne"], 0, "Clint Barton is a master archer."),
-    ("Who becomes Hawkeye's young protege in New York?", ["Kate Bishop", "Cassie Lang", "America Chavez", "Kamala Khan"], 0, "Kate Bishop takes up Hawkeye's bow."),
-    ("What alter-ego name did Clint Barton adopt during the Blip?", ["Ronin", "Yellowjacket", "Goliath", "Taskmaster"], 0, "Clint hunted criminals worldwide under the name Ronin."),
-    ("What giant snap eliminated half of all life in the universe?", ["The Blip / The Snap", "The Convergence", "The Emergence", "The Decimation"], 0, "Thanos used the 6 Infinity Stones to snap away 50% of living creatures."),
-    ("Who snapped his fingers in Avengers: Endgame to restore everyone?", ["Hulk (Bruce Banner)", "Tony Stark", "Thor", "Captain America"], 0, "Smart Hulk donned the Stark Gauntlet to snap everyone back."),
-    ("Who snapped his fingers to eliminate Thanos and his army, costing his life?", ["Tony Stark (Iron Man)", "Steve Rogers", "Thor", "Ant-Man"], 0, "Tony Stark uttered 'I am Iron Man' before snapping."),
-    ("What line does Steve Rogers say whenever he stands up to impossible odds?", ["'I can do this all day.'", "'Avengers Assemble!'", "'Whatever it takes.'", "'Proof that Tony Stark has a heart.'"], 0, "Steve Rogers famously says 'I can do this all day.'"),
-    ("What iconic command does Captain America finally give in Endgame?", ["'Avengers... assemble.'", "'Charge forward!'", "'Attack!'", "'For Brooklyn!'"], 0, "Cap summons Mjolnir and commands 'Avengers... assemble.'"),
-    ("Who receives Captain America's shield at the end of Endgame?", ["Sam Wilson", "Bucky Barnes", "John Walker", "Sharon Carter"], 0, "Steve hands his shield to Sam Wilson."),
-    ("Who is Tony Stark's wife?", ["Pepper Potts", "Peggy Carter", "Jane Foster", "Betty Ross"], 0, "Pepper Potts is CEO of Stark Industries and Tony's wife."),
-    ("What armor costume does Pepper Potts wear in Endgame?", ["Rescue", "Iron Heart", "War Machine", "Striker"], 0, "Pepper wears the blue Rescue armor."),
-    ("Who plays Jane Foster, the astrophysicist and Mighty Thor?", ["Natalie Portman", "Gwyneth Paltrow", "Scarlett Johansson", "Elizabeth Olsen"], 0, "Natalie Portman portrays Jane Foster."),
-    ("What element did Tony Stark synthesize in Iron Man 2 to power his arc reactor?", ["New synthetic element (Badassium/Vibranium structure)", "Tesseract liquid", "Palladium", "Uranium"], 0, "Tony constructed a new element using his father's hidden blue-prints."),
-    ("What toxic metal was poisoning Tony Stark's blood in Iron Man 2?", ["Palladium", "Lead", "Plutonium", "Mercury"], 0, "Palladium cores were slowly poisoning Tony."),
-    ("Who was the main villain in Iron Man (2008)?", ["Obadiah Stane (Iron Monger)", "Whiplash", "Justin Hammer", "Mandarin"], 0, "Obadiah Stane built the Iron Monger armor."),
-    ("Who played the fake Mandarin actor Trevor Slattery in Iron Man 3?", ["Ben Kingsley", "Guy Pearce", "Mads Mikkelsen", "Sam Rockwell"], 0, "Sir Ben Kingsley portrayed Trevor Slattery."),
-    ("Who was the real leader of the Ten Rings revealed in Shang-Chi?", ["Xu Wenwu", "Trevor Slattery", "Aldrich Killian", "Razor Fist"], 0, "Xu Wenwu was Shang-Chi's father and true ruler of Ten Rings."),
-]
-
-# Convert extra marvel to standard dicts
-for item in marvel_extra_raw:
-    marvel_questions.append({
-        "q": item[0],
-        "a": item[1],
-        "c": item[2],
-        "exp": item[3]
-    })
-
-
-# Generate Jurassic World / Jurassic Park Questions (100+)
-jurassic_questions = []
-
-jurassic_raw = [
-    ("Who wrote the original 'Jurassic Park' novel published in 1990?", ["Michael Crichton", "Stephen King", "Steven Spielberg", "Arthur Conan Doyle"], 0, "Michael Crichton wrote the legendary sci-fi novel Jurassic Park."),
-    ("Who directed the 1993 movie 'Jurassic Park'?", ["Steven Spielberg", "George Lucas", "James Cameron", "Colin Trevorrow"], 0, "Steven Spielberg directed the landmark 1993 film."),
-    ("What is the name of the eccentric billionaire who created Jurassic Park?", ["John Hammond", "Simon Masrani", "Eli Mills", "Peter Ludlow"], 0, "John Hammond was the founder of InGen and creator of Jurassic Park."),
-    ("On what fictional island was Jurassic Park located?", ["Isla Nublar", "Isla Sorna", "Isla Matanceros", "Isla Pena"], 0, "Isla Nublar ('Cloud Island') was 120 miles off the coast of Costa Rica."),
-    ("What island is designated as 'Site B' where dinosaurs were bred in the wild?", ["Isla Sorna", "Isla Nublar", "Isla Muerta", "Isla Tacaño"], 0, "Isla Sorna was Site B where dinosaurs were originally cloned and grown."),
-    ("How did scientists obtain dinosaur DNA in Jurassic Park?", ["Preserved in amber inside mosquitoes", "Fossilized marrow", "Ancient ice cores", "Cloning synthetic strands"], 0, "Mosquitoes trapped in amber millions of years ago provided fossilized blood samples."),
-    ("What animal's DNA was used to fill in the gaps of incomplete dinosaur genetic codes?", ["Frog DNA", "Lizard DNA", "Bird DNA", "Crocodile DNA"], 0, "West African frog DNA was used, which unexpectedly allowed some species to change sex and breed."),
-    ("What is the real name of the Velociraptor trainer in Jurassic World?", ["Owen Grady", "Alan Grant", "Ian Malcolm", "Nick Van Owen"], 0, "Owen Grady (played by Chris Pratt) trained the raptor pack."),
-    ("What is the name of the lead raptor trained by Owen Grady?", ["Blue", "Charlie", "Delta", "Echo"], 0, "Blue is the eldest and lead raptor trained by Owen."),
-    ("Name all four raptors in Owen Grady's pack in Jurassic World.", ["Blue, Charlie, Delta, Echo", "Alpha, Beta, Gamma, Delta", "Rexy, Blue, Red, Spike", "Slash, Claw, Swift, Hunter"], 0, "The pack consisted of Blue, Charlie, Delta, and Echo."),
-    ("Who was the chief geneticist for InGen who created the Indominus Rex?", ["Dr. Henry Wu", "Dr. Alan Grant", "Dr. Ellie Sattler", "Dr. Ian Malcolm"], 0, "Dr. Henry Wu was InGen's chief geneticist across Jurassic Park and World."),
-    ("What terrifying genetically modified hybrid dinosaur was featured in Jurassic World (2015)?", ["Indominus Rex", "Indoraptor", "Scorpios Rex", "Spinoraptor"], 0, "Indominus Rex was a hybrid made from T. Rex, Velociraptor, cuttlefish, tree frog, and serpent DNA."),
-    ("What hybrid dinosaur was created in Jurassic World: Fallen Kingdom for military sales?", ["Indoraptor", "Indominus Rex", "Scorpios Rex", "Ultimasaurus"], 0, "The Indoraptor was a smaller, stealthier weaponized prototype."),
-    ("What is the occupation of Dr. Alan Grant?", ["Paleontologist", "Paleobotanist", "Chaos Theorist mathematician", "Game Warden"], 0, "Dr. Alan Grant specializes in digging up and studying dinosaur fossils."),
-    ("What is the occupation of Dr. Ellie Sattler?", ["Paleobotanist", "Paleontologist", "Veterinarian", "Genetics Researcher"], 0, "Dr. Ellie Sattler is a specialist in prehistoric plant life."),
-    ("What branch of mathematics does Dr. Ian Malcolm study?", ["Chaos Theory", "Quantum Physics", "Topology", "Statistics"], 0, "Dr. Ian Malcolm is a mathematician who preaches Chaos Theory."),
-    ("Who played Dr. Ian Malcolm in the Jurassic Park franchise?", ["Jeff Goldblum", "Sam Neill", "Chris Pratt", "BD Wong"], 0, "Jeff Goldblum brought Ian Malcolm to life with iconic humor and philosophy."),
-    ("Who played Dr. Alan Grant in Jurassic Park?", ["Sam Neill", "Jeff Goldblum", "Laura Dern", "Richard Attenborough"], 0, "Sam Neill played paleontologist Dr. Alan Grant."),
-    ("Who played Dr. Ellie Sattler?", ["Laura Dern", "Julianne Moore", "Bryce Dallas Howard", "Tea Leoni"], 0, "Laura Dern portrayed Dr. Ellie Sattler."),
-    ("What corporation was InGen's main corporate rival in Jurassic Park?", ["Biosyn", "MantanSeas", "Masrani Global", "InGen Security"], 0, "Biosyn hired Dennis Nedry to steal dinosaur embryos."),
-    ("Who was the disgruntled computer programmer who sabotaged Jurassic Park's security system?", ["Dennis Nedry", "Ray Arnold", "Robert Muldoon", "Donald Gennaro"], 0, "Dennis Nedry turned off the fences to steal embryos in a Barbasol can."),
-    ("What everyday item was modified to secretively transport stolen dinosaur embryos?", ["Barbasol Shaving Cream can", "Soda can", "Thermos flask", "Camera lens"], 0, "Dennis Nedry used a custom-built cryogenic Barbasol shaving cream can."),
-    ("Which dinosaur killed Dennis Nedry in his jeep?", ["Dilophosaurus", "Velociraptor", "Compsognathus", "Metriacanthosaurus"], 0, "A Dilophosaurus blinded Nedry with venomous spit before attacking."),
-    ("What iconic feature did Jurassic Park's Dilophosaurus possess in the movie?", ["A expandable neck frill and venom spit", "Spikes on tail", "Feathers on wings", "Bioluminescence"], 0, "The film added a colorful neck frill and venom-spitting capability."),
-    ("What was the name of the park manager in Jurassic World played by Bryce Dallas Howard?", ["Claire Dearing", "Karen Mitchell", "Zara Young", "Maisie Lockwood"], 0, "Claire Dearing was the operations manager of Jurassic World."),
-    ("Who bought InGen and rebuilt the park into 'Jurassic World'?", ["Simon Masrani", "Eli Mills", "Lewis Dodgson", "Peter Ludlow"], 0, "Simon Masrani (Masrani Global) bought InGen and realized Hammond's dream."),
-    ("What large aquatic reptile was fed sharks in the Jurassic World lagoon?", ["Mosasaurus", "Plesiosaurus", "Megalodon", "Icthyosaurus"], 0, "The Mosasaurus leaped out of the water to devour great white sharks."),
-    ("What dinosaur was the main antagonist of Jurassic Park III?", ["Spinosaurus", "Tyrannosaurus Rex", "Velociraptor", "Ceratosaurus"], 0, "A massive Spinosaurus stalked the survivors on Isla Sorna in JP3."),
-    ("What item swallowed by a Spinosaurus rang repeatedly in Jurassic Park III?", ["A satellite phone", "A pager", "A walkie-talkie", "An alarm clock"], 0, "The satellite phone rang inside the Spinosaurus' stomach!"),
-    ("What giant dinosaur with a crest on its head turned out to communicate through resonating chambers?", ["Velociraptor (acoustic chamber)", "Parasaurolophus", "Corythosaurus", "Brachiosaurus"], 0, "Dr. Grant 3D-printed a Velociraptor resonating chamber to speak to raptors."),
-    ("What giant plant-eating dinosaur was the first dinosaur seen by Grant and Sattler in 1993?", ["Brachiosaurus", "Triceratops", "Stegosaurus", "Apatosaurus"], 0, "The majestic Brachiosaurus reaching for tree leaves captivated Grant and Sattler."),
-    ("What sick dinosaur did Dr. Ellie Sattler tend to in the original movie?", ["Triceratops", "Stegosaurus", "Parasaurolophus", "Ankylosaurus"], 0, "Ellie examined a sick Triceratops that swallowed toxic West Indian Lilac berries."),
-    ("What warning sign gave away the approaching T. Rex in the jeep scene?", ["Water rippling in a plastic cup", "Car alarm sounding", "Trees snapping in distance", "Radio static"], 0, "Ripples formed in a cup of water with each heavy step of the T. Rex."),
-    ("What flare color did Dr. Grant and Dr. Malcolm use to distract the T. Rex?", ["Red", "Green", "Yellow", "White"], 0, "They used bright red road flares to lure the T. Rex away."),
-    ("What happened to the lawyer Donald Gennaro during the T. Rex attack?", ["Eaten while sitting on a toilet", "Eaten in the jeep", "Escaped in a helicopter", "Stepped on by T. Rex"], 0, "Gennaro ran into a thatched bathroom where the T. Rex devoured him."),
-    ("What was the chief game warden's famous last word line before raptors got him in Jurassic Park?", ["'Clever girl.'", "'Hold onto your butts.'", "'Life finds a way.'", "'Shoott her!'"], 0, "Robert Muldoon whispered 'Clever girl' right before a raptor ambushed him."),
-    ("Who said the famous line 'Life, uh, finds a way'?", ["Dr. Ian Malcolm", "John Hammond", "Dr. Alan Grant", "Dennis Nedry"], 0, "Ian Malcolm delivered this iconic line about natural evolution."),
-    ("Who played the chief engineer Ray Arnold who said 'Hold onto your butts'?", ["Samuel L. Jackson", "Wayne Knight", "Bob Peck", "BD Wong"], 0, "Samuel L. Jackson played Ray Arnold."),
-    ("What was John Hammond's catchphrase regarding making Jurassic Park?", ["'Spared no expense!'", "'Welcome to Jurassic Park!'", "'Science without limits!'", "'Nothing can go wrong!'"], 0, "Hammond boasted repeatedly that he 'Spared no expense!'"),
-    ("What miniature insect inside amber sat atop John Hammond's cane?", ["Mosquito", "Amber Beetle", "Prehistoric Ant", "Dragonfly"], 0, "Hammond's walking stick had a mosquito encased in amber at the top handle."),
-    ("What were the names of John Hammond's grandchildren visiting the park?", ["Lex and Tim Murphy", "Claire and Zach", "Maisie and Gray", "Kelly and Eric"], 0, "Lex and Tim Murphy visited their grandfather on Isla Nublar."),
-    ("What skill did Lex Murphy use to restore the park's computer system and locking doors?", ["Computer Hacking (Unix system)", "Electric wiring", "DNA sequencing", "Radio repair"], 0, "Lex famously exclaimed 'It's a UNIX system! I know this!' to lock doors."),
-    ("What small green scavengers hunted in packs in The Lost World: Jurassic Park?", ["Compsognathus (Compies)", "Gallimimus", "Troodon", "Herrerasaurus"], 0, "Compies swarmed in groups to overpower prey."),
-    ("Who directed 'The Lost World: Jurassic Park' (1997)?", ["Steven Spielberg", "Joe Johnston", "Colin Trevorrow", "J.A. Bayona"], 0, "Steven Spielberg returned to direct the second movie."),
-    ("What vehicle carried a infant T. Rex back to San Diego in The Lost World?", ["The S.S. Venture ship", "A cargo plane", "A submarine", "A military convoy"], 0, "The freighter ship S.S. Venture crashed into the San Diego docks."),
-    ("What city did the T. Rex rampage through at the climax of The Lost World?", ["San Diego", "Los Angeles", "San Francisco", "Miami"], 0, "The adult T. Rex caused chaos through the streets of San Diego."),
-    ("What character in Jurassic Park II was Ian Malcolm's daughter?", ["Kelly Curtis", "Lex Murphy", "Maisie Lockwood", "Sarah Harding"], 0, "Kelly Curtis (played by Vanessa Lee Chester) was Ian's daughter."),
-    ("What gymnastics move did Kelly use to kick a raptor out a window in Lost World?", ["Uneven bars spin kick", "Balance beam flip", "Vault jump", "Floor cartwheel"], 0, "Kelly used pipe bars to perform a kick off a raptor!"),
-    ("Who was the wildlife photographer sent with Ian Malcolm to Site B?", ["Nick Van Owen (Vince Vaughn)", "Roland Tembo", "Dieter Stark", "Ajay Sidhu"], 0, "Vince Vaughn played environmental photojournalist Nick Van Owen."),
-    ("Who was the Big Game Hunter looking to hunt an adult Male T. Rex in Lost World?", ["Roland Tembo", "Peter Ludlow", "Robert Muldoon", "Wheatley"], 0, "Roland Tembo wanted to harvest a male Rex as his ultimate trophy."),
-    ("What island was the setting for Jurassic World Camp Cretaceous?", ["Isla Nublar", "Isla Sorna", "Isla Matanceros", "Santamaria"], 0, "Camp Cretaceous takes place on Isla Nublar alongside the main movies."),
-    ("What clone child was introduced in Jurassic World: Fallen Kingdom?", ["Maisie Lockwood", "Lex Murphy", "Charlotte Wu", "Sora"], 0, "Maisie Lockwood was revealed to be a human clone created by Benjamin Lockwood."),
-    ("Who was John Hammond's former business partner who built Lockwood Manor?", ["Benjamin Lockwood", "Eli Mills", "Lewis Dodgson", "Gunnar Eversol"], 0, "Sir Benjamin Lockwood co-founded InGen technology with John Hammond."),
-    ("What volcanic eruption threatened the dinosaurs on Isla Nublar in Fallen Kingdom?", ["Mount Sibo", "Kilauea", "Vesuvius", "Mount St. Helens"], 0, "Mount Sibo erupted, destroying Isla Nublar and its surviving dinosaurs."),
-    ("Where were the rescued dinosaurs taken and auctioned in Fallen Kingdom?", ["Lockwood Manor in California", "Costa Rica Port", "San Diego Dome", "Malta Market"], 0, "They were transported to the estate basement of Lockwood Manor."),
-    ("What company operates the sanctuary in the Dolomites in Jurassic World Dominion?", ["Biosyn Genetics", "InGen", "Mantah Corp", "Masrani"], 0, "Biosyn Genetics created the Valley Sanctuary run by Lewis Dodgson."),
-    ("What giant prehistoric insects were created by Biosyn in Dominion to threaten food supplies?", ["Giant Locusts", "Prehistoric Grasshoppers", "Meganeura Dragonfly", "Terror Ants"], 0, "Genetically modified prehistoric locusts threatened global agriculture."),
-    ("What massive apex predator dinosaur fought the T. Rex in Jurassic World Dominion?", ["Giganotosaurus", "Spinosaurus", "Carcharodontosaurus", "Allosaurus"], 0, "The Giganotosaurus was the giant predator in the Biosyn valley."),
-    ("What dinosaur species teamed up with the T. Rex to impale the Giganotosaurus?", ["Therizinosaurus", "Ankylosaurus", "Stegosaurus", "Carnotaurus"], 0, "The long-clawed Therizinosaurus impaled the Giganotosaurus."),
-    ("What is the nickname of the iconic original T. Rex in Jurassic Park & World?", ["Rexy / Roberta", "Queen", "Big Red", "Slasher"], 0, "Fans and filmmakers refer to the original T. Rex as Rexy."),
-    ("What flocking dinosaur species ran alongside Dr. Grant and the kids in Jurassic Park?", ["Gallimimus", "Dryosaurus", "Oviraptor", "Pachycephalosaurus"], 0, "Grant shouted 'They're flocking this way!' as Gallimimus stampeded."),
-    ("What armored dinosaur has a heavy bone club on its tail?", ["Ankylosaurus", "Stegosaurus", "Pachycephalosaurus", "Nodosaurus"], 0, "Ankylosaurus features heavy body armor and a tail club."),
-    ("What dinosaur has a thick dome head used for headbutting?", ["Pachycephalosaurus", "Styracosaurus", "Parasaurolophus", "Iguanodon"], 0, "Pachycephalosaurus had a thick bone dome atop its skull."),
-    ("What dinosaur featured long sail fins along its back in Jurassic Park III?", ["Spinosaurus", "Ouranosaurus", "Dimetrodon", "Acrocanthosaurus"], 0, "Spinosaurus is known for its tall spinal sail."),
-    ("What sail-backed synapsid reptile was encountered in the underground tunnels of Biosyn in Dominion?", ["Dimetrodon", "Spinosaurus", "Edaphosaurus", "Secodontosaurus"], 0, "Grant and Malcolm encountered Dimetrodon in the Biosyn subterranean mines."),
-    ("What species of pterosaur attacked the river raft in Jurassic Park III?", ["Pteranodon", "Dimorphodon", "Quetzalcoatlus", "Tapejara"], 0, "Pteranodons nested in the fog-filled bird cage canyon."),
-    ("What enormous flying reptile attacked the plane in Jurassic World Dominion?", ["Quetzalcoatlus", "Pteranodon", "Dimorphodon", "Rhamphorhynchus"], 0, "Quetzalcoatlus was one of the largest flying animals ever."),
-    ("What small feathered raptor was introduced in Dominion hunting on ice?", ["Pyroraptor", "Atrociraptor", "Deinonychus", "Microraptor"], 0, "Pyroraptor was a red feathered dromaeosaurid."),
-    ("What four pale white and patterned raptors were trained by Soyona Santos in Malta?", ["Atrociraptors", "Velociraptors", "Utahraptors", "Pyroraptors"], 0, "Atrociraptors responded to laser pointer target commands."),
-    ("What city hosts the underground dinosaur black market in Jurassic World Dominion?", ["Valletta, Malta", "Rome, Italy", "Tangier, Morocco", "Athens, Greece"], 0, "The amber and illegal dinosaur black market was set in Malta."),
-    ("What baby raptor child was born to Blue through parthenogenesis?", ["Beta", "Alpha", "Mini", "Charm"], 0, "Blue reproduced asexual single-parent offspring named Beta."),
-    ("What is parthenogenesis?", ["Asexual reproduction without male fertilization", "Genetic gene splicing", "Cloning via synthetic egg", "Hybrid breeding"], 0, "Parthenogenesis allows an embryo to develop without fertilization."),
-    ("What island contained the Mantah Corp secret facility in Camp Cretaceous?", ["Mantah Corp Island", "Isla Sorna", "Isla Matanceros", "Isla Pena"], 0, "Mantah Corp built an island divided into unique biome domes."),
-    ("What Jurassic World vehicle ran on a clear single rail system through the park?", ["Monorail", "Gyrosphere", "Jeep Wrangler", "Submarine"], 0, "The Jurassic World Monorail transported guests between sectors."),
-    ("What clear spherical vehicle allowed guests to drive among herbivores in Jurassic World?", ["Gyrosphere", "Glass Pod", "Orbiter", "Sphere Buggy"], 0, "Zach and Gray rode a Gyrosphere off-track before the Indominus attacked."),
-    ("What ride replaced the Jurassic Park River Adventure at Universal Studios Hollywood?", ["Jurassic World: The Ride", "VelociCoaster", "Indominus Escape", "Raptor Flight"], 0, "Jurassic World: The Ride added Mosasaurus and Indominus Rex animatronics."),
-    ("What famous roller coaster opened at Universal's Islands of Adventure in 2021?", ["Jurassic World VelociCoaster", "Pteranodon Flyers", "T-Rex Revenge", "Raptor Dash"], 0, "The VelociCoaster is a high-speed launch coaster through a raptor paddock."),
-    ("What color was the paint scheme of the iconic 1993 Jurassic Park Ford Explorers?", ["Yellow, green, and red stripes", "Blue and white", "Black and silver", "Solid orange"], 0, "The self-driving electric Ford Explorers featured bright yellow, green, and red graphics."),
-    ("What number jeep was driven by Dennis Nedry when he got stuck in the mud?", ["Jeep 12", "Jeep 10", "Jeep 18", "Jeep 29"], 0, "Dennis Nedry crashed Jeep 12 during the tropical storm."),
-    ("What number jeep did Nedry winch to a tree trunk before meeting the Dilophosaurus?", ["Jeep 12", "Jeep 04", "Jeep 16", "Jeep 99"], 0, "Jeep 12 slid off the muddy trail."),
-    ("What species was the horned herbivore featured with a massive shield skull?", ["Triceratops", "Sinoceratops", "Nasutoceratops", "Styracosaurus"], 0, "Triceratops had three distinct facial horns and a thick frill."),
-    ("What carnivorous dinosaur possessed two small horns above its eyes and a short snout in Fallen Kingdom?", ["Carnotaurus", "Allosaurus", "Baryonyx", "Ceratosaurus"], 0, "Carnotaurus is known for its distinct bull-like horns."),
-    ("What semi-aquatic fish-eating spinosaurid was trapped in the lava tunnels in Fallen Kingdom?", ["Baryonyx", "Suchomimus", "Spinosaurus", "Irritator"], 0, "Claire and Franklin encountered a Baryonyx inside the underground bunker."),
-    ("What character was the IT nerd terrified of dinosaurs in Fallen Kingdom?", ["Franklin Webb", "Zia Rodriguez", "Eli Mills", "Lowery Cruthers"], 0, "Franklin Webb was the anxious technician working with Claire's Dinosaur Protection Group."),
-    ("What was the name of the Paleo-veterinarian who joined Claire Dearing in Fallen Kingdom?", ["Dr. Zia Rodriguez", "Ellie Sattler", "Sarah Harding", "Karen Mitchell"], 0, "Dr. Zia Rodriguez was a fearless paleoveterinarian."),
-    ("Who played Lowery Cruthers, the desk control operator wearing a retro Jurassic Park shirt in Jurassic World?", ["Jake Johnson", "Omar Sy", "B.D. Wong", "Brian Tee"], 0, "Jake Johnson played Lowery Cruthers in the control room."),
-    ("What merchandise toy company produced the iconic 1990s Jurassic Park action figures?", ["Kenner", "Hasbro", "Mattel", "NECA"], 0, "Kenner produced the legendary 1993 line of action figures with 'JP' scars."),
-    ("What company currently produces the Jurassic World toy line as of 2018 onwards?", ["Mattel", "Kenner", "Hasbro", "McFarlane"], 0, "Mattel took over the master toy license and created heavily detailed figures."),
-    ("What sound effect was famously mixed to create the iconic T. Rex roar in Jurassic Park?", ["Baby elephant, tiger, and alligator sounds", "Lion and bear growls", "Blue whale call", "Jet engine noise"], 0, "Sound designer Gary Rydstrom mixed a baby elephant squeal, tiger roar, and alligator hiss!"),
-    ("What composer created the iconic orchestral main theme for Jurassic Park?", ["John Williams", "Michael Giacchino", "Hans Zimmer", "Alan Silvestri"], 0, "John Williams composed the unforgettable, majestic theme score."),
-    ("Who composed the soundtrack score for the Jurassic World trilogy?", ["Michael Giacchino", "John Williams", "Danny Elfman", "Howard Shore"], 0, "Michael Giacchino composed the music for the Jurassic World films."),
-    ("What was the name of the mercenary company captain hired by Eli Mills in Fallen Kingdom?", ["Ken Wheatley", "Vic Hoskins", "Dieter Stark", "Roland Tembo"], 0, "Ken Wheatley pulled teeth from tranquilized dinosaurs as trophies."),
-    ("Who was the Head of InGen Security who wanted to weaponize raptors in Jurassic World?", ["Vic Hoskins", "Eli Mills", "Peter Ludlow", "Dr. Wu"], 0, "Vic Hoskins (played by Vincent D'Onofrio) envisioned military raptors."),
-    ("What was the name of John Hammond's greedy nephew who led the InGen harvest team in Lost World?", ["Peter Ludlow", "Eli Mills", "Lewis Dodgson", "Donald Gennaro"], 0, "Peter Ludlow took over InGen and ordered the expedition to Site B."),
-    ("What dinosaur species was seen running across a prairie with red feathers or crests in Jurassic Park 3?", ["Velociraptor (male with quills)", "Gallimimus", "Compsognathus", "Corythosaurus"], 0, "Male Velociraptors in JP3 featured quill-like feathers on their heads."),
-    ("What short film directed by Colin Trevorrow was released in 2019 showing dinosaurs in Big Rock National Park?", ["Battle at Big Rock", "Dominion Prequel", "Return to Nublar", "Camp Cretaceous"], 0, "Battle at Big Rock depicted a family camping trip interrupted by Nasutoceratops and Allosaurus."),
-]
-
-for item in jurassic_raw:
-    jurassic_questions.append({
-        "q": item[0],
-        "a": item[1],
-        "c": item[2],
-        "exp": item[3]
-    })
-
-
-# Generate NBA Questions (100+)
-nba_questions = []
-
-nba_raw = [
-    ("Which NBA team has won the most championships in league history (tied with Celtics at 17/18)?", ["Boston Celtics / LA Lakers", "Chicago Bulls", "Golden State Warriors", "San Antonio Spurs"], 0, "The Boston Celtics and Los Angeles Lakers hold the record for most NBA titles."),
-    ("Who is the NBA's all-time leading scorer in regular season history?", ["LeBron James", "Kareem Abdul-Jabbar", "Karl Malone", "Kobe Bryant"], 0, "LeBron James passed Kareem Abdul-Jabbar in February 2023 to claim #1 all-time."),
-    ("Which player holds the record for scoring the most points in a single NBA game (100 points)?", ["Wilt Chamberlain", "Kobe Bryant", "Michael Jordan", "Devin Booker"], 0, "Wilt Chamberlain scored 100 points on March 2, 1962."),
-    ("Who scored 81 points in a single game against the Toronto Raptors in 2006?", ["Kobe Bryant", "LeBron James", "Tracy McGrady", "Allen Iverson"], 0, "Kobe Bryant scored 81 points on January 22, 2006."),
-    ("Which NBA franchise drafted Kobe Bryant in 1996 before trading him to the Lakers?", ["Charlotte Hornets", "New Jersey Nets", "Milwaukee Bucks", "Phoenix Suns"], 0, "The Charlotte Hornets selected Kobe 13th overall and traded him for Vlade Divac."),
-    ("How many NBA championships did Michael Jordan win with the Chicago Bulls?", ["6", "5", "7", "4"], 0, "Michael Jordan led the Bulls to two 3-peats, winning 6 total rings."),
-    ("What NBA team was originally known as the Seattle SuperSonics before relocating in 2008?", ["Oklahoma City Thunder", "Memphis Grizzlies", "New Orleans Pelicans", "Sacramento Kings"], 0, "The SuperSonics relocated to Oklahoma City and became the Thunder."),
-    ("Who won the NBA MVP award for four consecutive years in 2009, 2010, 2012, and 2013 (4 total)?", ["LeBron James", "Steph Curry", "Steve Nash", "Giannis Antetokounmpo"], 0, "LeBron James won 4 MVPs in a 5-year span."),
-    ("Which player has made the most 3-pointers in NBA history?", ["Stephen Curry", "Ray Allen", "Reggie Miller", "James Harden"], 0, "Stephen Curry broke Ray Allen's record in December 2021."),
-    ("Who is nicknamed 'The Greek Freak'?", ["Giannis Antetokounmpo", "Luka Dončić", "Nikola Jokić", "Kristaps Porziņģis"], 0, "Giannis Antetokounmpo plays for the Milwaukee Bucks."),
-    ("Which team drafted LeBron James with the #1 overall pick in the 2003 NBA Draft?", ["Cleveland Cavaliers", "Miami Heat", "Toronto Raptors", "Detroit Pistons"], 0, "LeBron was drafted straight out of St. Vincent-St. Mary High School by Cleveland."),
-    ("What college did Michael Jordan play for before entering the NBA?", ["North Carolina (UNC)", "Duke", "Kentucky", "Georgetown"], 0, "Jordan won a national championship at UNC Tar Heels in 1982."),
-    ("Who is the only player in NBA history to average a triple-double across four separate seasons?", ["Russell Westbrook", "Oscar Robertson", "Nikola Jokić", "Luka Dončić"], 0, "Russell Westbrook accomplished this historic feat with OKC and Washington."),
-    ("Which head coach won 11 NBA championships (9 with Boston Celtics as coach/executive)?", ["Red Auerbach", "Phil Jackson", "Gregg Popovich", "Pat Riley"], 0, "Red Auerbach built the Boston Celtics dynasty."),
-    ("Which head coach holds the record for most total NBA championship rings as head coach (11)?", ["Phil Jackson", "Gregg Popovich", "Pat Riley", "Red Auerbach"], 0, "Phil Jackson won 6 with the Bulls and 5 with the Lakers."),
-    ("What team won the 2016 NBA Finals after coming back from a 3-1 deficit?", ["Cleveland Cavaliers", "Golden State Warriors", "Miami Heat", "San Antonio Spurs"], 0, "The 2016 Cavaliers were the first team in Finals history to recover from 3-1 down."),
-    ("Who won Finals MVP for the Toronto Raptors during their 2019 championship run?", ["Kawhi Leonard", "Kyle Lowry", "Pascal Siakam", "Fred VanVleet"], 0, "Kawhi Leonard led Toronto to its first-ever NBA title."),
-    ("What player holds the record for most career assists in NBA history?", ["John Stockton", "Jason Kidd", "Chris Paul", "Magic Johnson"], 0, "John Stockton recorded 15,806 career assists with the Utah Jazz."),
-    ("Who holds the record for most career rebounds in NBA history?", ["Wilt Chamberlain", "Bill Russell", "Kareem Abdul-Jabbar", "Elvin Hayes"], 0, "Wilt Chamberlain pulled down 23,924 career rebounds."),
-    ("Which team holds the record for most regular-season wins in a single season (73-9)?", ["Golden State Warriors (2015-16)", "Chicago Bulls (1995-96)", "LA Lakers (1971-72)", "Boston Celtics (1985-86)"], 0, "The 2015-16 Warriors set the record going 73-9."),
-    ("Who was the first unanimous MVP in NBA history?", ["Stephen Curry (2015-16)", "LeBron James", "Michael Jordan", "Shaquille O'Neal"], 0, "Steph Curry won all 131 first-place votes after making 402 three-pointers."),
-    ("What player was known as 'The Answer'?", ["Allen Iverson", "Stephon Marbury", "Steve Francis", "Tracy McGrady"], 0, "Allen Iverson spent his prime years with the Philadelphia 76ers."),
-    ("Who was nicknamed 'The Mailman' because he always delivered?", ["Karl Malone", "Charles Barkley", "Patrick Ewing", "David Robinson"], 0, "Karl Malone formed an iconic pick-and-roll duo with John Stockton."),
-    ("Which team selected Dirk Nowitzki in the 1998 NBA Draft before trading him to Dallas?", ["Milwaukee Bucks", "Dallas Mavericks", "Boston Celtics", "Phoenix Suns"], 0, "The Bucks drafted Nowitzki 9th overall and traded him for Tractor Traylor."),
-    ("What height was Muggsy Bogues, the shortest player in NBA history?", ["5 ft 3 in (160 cm)", "5 ft 5 in", "5 ft 7 in", "5 ft 1 in"], 0, "Muggsy Bogues played 14 seasons in the NBA at 5'3\"."),
-    ("Who is the tallest player in NBA history (tied at 7 ft 7 in)?", ["Gheorghe Mureșan & Manute Bol", "Yao Ming", "Tacko Fall", "Victor Wembanyama"], 0, "Mureșan and Bol both measured at 7 feet 7 inches."),
-    ("What french phenom was drafted #1 overall by the San Antonio Spurs in the 2023 NBA Draft?", ["Victor Wembanyama", "Rudy Gobert", "Tony Parker", "Evan Fournier"], 0, "Victor Wembanyama stands 7'4\" with incredible guard-like skills."),
-    ("Which player is known as 'The Big Fundamental'?", ["Tim Duncan", "Kevin Garnett", "Dirk Nowitzki", "Pau Gasol"], 0, "Tim Duncan won 5 championships with the San Antonio Spurs."),
-    ("What team did Shaquille O'Neal and Kobe Bryant win three consecutive titles with (2000-2002)?", ["Los Angeles Lakers", "Miami Heat", "Orlando Magic", "Phoenix Suns"], 0, "The Shaq-and-Kobe Lakers three-peated from 2000 to 2002."),
-    ("Which team drafted Shaquille O'Neal #1 overall in 1992?", ["Orlando Magic", "LA Lakers", "Miami Heat", "LSU Tigers"], 0, "Shaq began his legendary NBA career with the Orlando Magic."),
-    ("Who hit the iconic game-winning shot 'The Shot' over Craig Ehlo in the 1989 playoffs?", ["Michael Jordan", "Larry Bird", "Magic Johnson", "Reggie Miller"], 0, "Michael Jordan hit the clutch buzzer-beater against Cleveland in 1989."),
-    ("What NBA team plays its home games at Madison Square Garden?", ["New York Knicks", "Brooklyn Nets", "Boston Celtics", "Philadelphia 76ers"], 0, "The NY Knicks call 'The World's Most Famous Arena' home."),
-    ("What player won 11 NBA championship rings, the most by any player in history?", ["Bill Russell", "Sam Jones", "Kareem Abdul-Jabbar", "Robert Horry"], 0, "Bill Russell won 11 titles in 13 seasons with the Boston Celtics."),
-    ("Who was known as 'The Round Mound of Rebound'?", ["Charles Barkley", "Shaquille O'Neal", "Dennis Rodman", "Moses Malone"], 0, "Sir Charles Barkley was a dominant undersized power forward."),
-    ("Which NBA team moved from Vancouver to Memphis in 2001?", ["Grizzlies", "Raptors", "Pelicans", "Hornets"], 0, "The Vancouver Grizzlies relocated to Memphis, Tennessee."),
-    ("What team was known for the 'Bad Boys' era in the late 1980s?", ["Detroit Pistons", "Chicago Bulls", "New York Knicks", "Boston Celtics"], 0, "Isiah Thomas and the Detroit Pistons featured physical defense."),
-    ("Who won the 1988 NBA Slam Dunk Contest with a dunk from the free-throw line?", ["Michael Jordan", "Dominique Wilkins", "Spud Webb", "Vince Carter"], 0, "Jordan famously took off from the free-throw line against Wilkins."),
-    ("Who performed arguably the greatest Slam Dunk Contest show in 2000 in Oakland?", ["Vince Carter", "Tracy McGrady", "Steve Francis", "Kobe Bryant"], 0, "Vince Carter ('Vinsanity') put on an iconic dunk exhibition in 2000."),
-    ("What player scored 13 points in 35 seconds to pull off a miracle win against San Antonio in 2004?", ["Tracy McGrady", "Kobe Bryant", "Reggie Miller", "Ray Allen"], 0, "T-Mac hit 4 consecutive three-pointers including a 4-point play!"),
-    ("Who hit the legendary game-tying corner 3-pointer in Game 6 of the 2013 NBA Finals for Miami?", ["Ray Allen", "Mike Miller", "Shane Battier", "LeBron James"], 0, "Ray Allen saved the Heat's season with his corner 3 against San Antonio."),
-    ("What college did Steph Curry play for in the NCAA Tournament?", ["Davidson College", "Duke", "North Carolina", "Kansas"], 0, "Steph led Davidson Wildcats to an unforgettable Elite Eight run in 2008."),
-    ("Which player is nickname 'The Process'?", ["Joel Embiid", "Ben Simmons", "Markelle Fultz", "Jimmy Butler"], 0, "Joel Embiid adopted the nickname 'The Process' in Philadelphia."),
-    ("Who was the youngest MVP in NBA history at age 22?", ["Derrick Rose (2010-11)", "LeBron James", "Wes Unseld", "Magic Johnson"], 0, "Derrick Rose won MVP in 2011 with the Chicago Bulls."),
-    ("What center won 3 MVP awards with the Denver Nuggets (2021, 2022, 2024)?", ["Nikola Jokić", "Luka Dončić", "Joel Embiid", "Domantas Sabonis"], 0, "Nikola 'The Joker' Jokić led Denver to its first title in 2023."),
-    ("What nation is Nikola Jokić from?", ["Serbia", "Slovenia", "Croatia", "Greece"], 0, "Jokić represents Serbia in international basketball."),
-    ("What nation is Luka Dončić from?", ["Slovenia", "Serbia", "Spain", "Lithuania"], 0, "Luka Dončić was born in Ljubljana, Slovenia."),
-    ("What team drafted Dirk Nowitzki, Luka Dončić (traded night of), and Kyrie Irving?", ["Atlanta Hawks (traded Luka)", "Dallas Mavericks", "Phoenix Suns", "Cleveland Cavaliers"], 0, "Atlanta drafted Luka 3rd overall in 2018 and traded him to Dallas for Trae Young."),
-    ("What player won Finals MVP with three different franchises (Heat, Spurs, Raptors)?", ["Kawhi Leonard & LeBron James (3 franchises each)", "Kevin Durant", "Shaquille O'Neal", "Danny Green"], 0, "LeBron won with Heat, Cavs, Lakers; Kawhi won with Spurs and Raptors."),
-    ("Who holds the record for most triple-doubles in NBA history?", ["Russell Westbrook", "Oscar Robertson", "Magic Johnson", "Nikola Jokić"], 0, "Russell Westbrook surpassed Oscar Robertson's long-standing record in 2021."),
-    ("What is the name of the trophy awarded to the winner of the NBA Finals?", ["Larry O'Brien Trophy", "Bill Russell Trophy", "Walter A. Brown Trophy", "Red Auerbach Cup"], 0, "The championship trophy is named after former commissioner Larry O'Brien."),
-    ("Who is the logo of the NBA modeled after?", ["Jerry West", "Michael Jordan", "Oscar Robertson", "Bob Cousy"], 0, "The iconic silhouette depicts 'The Logo', Jerry West."),
-    ("What team did Magic Johnson play his entire career for?", ["Los Angeles Lakers", "Boston Celtics", "Detroit Pistons", "Chicago Bulls"], 0, "Magic orchestrated the 'Showtime' Lakers in the 1980s."),
-    ("What duo formed 'Showtime' along with Magic Johnson for the Lakers?", ["Kareem Abdul-Jabbar", "Shaquille O'Neal", "James Worthy", "Wilkes"], 0, "Kareem Abdul-Jabbar was the captain and dominant center."),
-    ("What signature shot was Kareem Abdul-Jabbar famous for?", ["Skyhook", "Fadeaway", "Dream Shake", "Bank shot"], 0, "Kareem's Skyhook was considered virtually unblockable."),
-    ("What signature footwork move made Hakeem Olajuwon famous?", ["The Dream Shake", "The Eurostep", "The Crossover", "The Stepback"], 0, "Hakeem 'The Dream' Olajuwon bewildered defenders in the post."),
-    ("Which team won back-to-back NBA championships in 1994 and 1995 during Jordan's baseball sabbatical?", ["Houston Rockets", "New York Knicks", "Utah Jazz", "Seattle SuperSonics"], 0, "Hakeem Olajuwon led the Houston Rockets to consecutive titles."),
-    ("Who hit the game-winning 3-pointer in Game 7 of the 2016 NBA Finals for Cleveland?", ["Kyrie Irving", "LeBron James", "JR Smith", "Kevin Love"], 0, "Kyrie Irving drained a clutch step-back 3 over Steph Curry."),
-    ("What defensive play in Game 7 of the 2016 Finals is known simply as 'The Block'?", ["LeBron James on Andre Iguodala", "Tristan Thompson on Draymond Green", "Giannis on Deandre Ayton", "Kawhi on Iguodala"], 0, "LeBron chased down Andre Iguodala in the closing minutes."),
-    ("Who is the only player to win NBA MVP, Defensive Player of the Year, and Finals MVP in the same season twice?", ["Hakeem Olajuwon & Michael Jordan", "LeBron James", "Giannis Antetokounmpo", "Shaquille O'Neal"], 0, "Jordan (1988/1998) and Olajuwon (1994) dominated both ends of the floor."),
-    ("What team drafted Giannis Antetokounmpo with the 15th pick in 2013?", ["Milwaukee Bucks", "Toronto Raptors", "Atlanta Hawks", "Dallas Mavericks"], 0, "The Milwaukee Bucks selected Giannis 15th overall."),
-    ("What team drafted James Harden #3 overall in 2009?", ["Oklahoma City Thunder", "Houston Rockets", "Brooklyn Nets", "Philadelphia 76ers"], 0, "Harden began as Sixth Man of the Year with OKC alongside Durant & Westbrook."),
-    ("Who won the 2021 NBA Championship with the Milwaukee Bucks scoring 50 points in Game 6?", ["Giannis Antetokounmpo", "Khris Middleton", "Jrue Holiday", "Brook Lopez"], 0, "Giannis dropped 50 points and 14 rebounds to seal the championship."),
-    ("What NBA player was nicknamed 'The Truth' by Shaquille O'Neal?", ["Paul Pierce", "Ray Allen", "Kevin Garnett", "Vince Carter"], 0, "Paul Pierce was dubbed 'The Truth' after a stellar performance against the Lakers."),
-    ("Who was nicknamed 'The Big Ticket'?", ["Kevin Garnett", "Tim Duncan", "Chris Webber", "Rasheed Wallace"], 0, "Kevin Garnett energized fans in Minnesota and Boston."),
-    ("What player won 3 straight championships with the Lakers and 2 with the Heat?", ["Shaquille O'Neal", "LeBron James", "Udonis Haslem", "Dwyane Wade"], 0, "Shaq won titles in LA (2000-02) and Miami (2006)."),
-    ("Who was nicknamed 'Flash' and spent most of his career with the Miami Heat?", ["Dwyane Wade", "Chris Bosh", "LeBron James", "Ray Allen"], 0, "Dwyane Wade led Miami to its first championship in 2006."),
-    ("What team drafted Kevin Durant #2 overall in 2007?", ["Seattle SuperSonics", "Oklahoma City Thunder", "Portland Trail Blazers", "Golden State Warriors"], 0, "KD was drafted by Seattle right before the franchise relocated."),
-    ("Who was drafted #1 overall ahead of Kevin Durant in 2007?", ["Greg Oden", "Al Horford", "Mike Conley", "Joakim Noah"], 0, "Greg Oden was taken #1 by Portland but suffered career injuries."),
-    ("Which player was famously drafted #1 ahead of Michael Jordan in 1984?", ["Akeem (Hakeem) Olajuwon", "Sam Bowie", "Charles Barkley", "John Stockton"], 0, "Hakeem Olajuwon was picked #1 by Houston; Sam Bowie went #2 to Portland; Jordan went #3."),
-    ("What center was taken #2 ahead of Michael Jordan in the 1984 NBA Draft?", ["Sam Bowie", "Hakeem Olajuwon", "Sam Perkins", "Otis Thorpe"], 0, "Portland selected Sam Bowie at #2, missing out on MJ."),
-    ("Who won the NBA regular season MVP in 2014 and famously declared 'You the real MVP' to his mother?", ["Kevin Durant", "LeBron James", "Russell Westbrook", "Steph Curry"], 0, "KD gave an emotional speech honoring his mother Wand Pratt."),
-    ("What NBA team did Klay Thompson play for when he scored 37 points in a SINGLE QUARTER in 2015?", ["Golden State Warriors", "Dallas Mavericks", "LA Lakers", "Sacramento Kings"], 0, "Klay Thompson scored 37 points in 12 minutes against Sacramento without missing a shot!"),
-    ("How many 3-pointers did Klay Thompson hit in his 14 three-pointer record game against Chicago?", ["14", "13", "12", "15"], 0, "Klay set the regular season single-game record with 14 threes."),
-    ("Who holds the record for most 3-pointers in an NBA playoff game (12)?", ["Damian Lillard", "Klay Thompson", "Steph Curry", "Ray Allen"], 0, "Damian Lillard sank 12 threes in a double-OT playoff game against Denver."),
-    ("What point guard was nicknamed 'Dame Time' for his clutch shots?", ["Damian Lillard", "Kyrie Irving", "Ja Morant", "Chris Paul"], 0, "Damian Lillard points to his wrist after hitting clutch daggers."),
-    ("Who hit a 37-foot series-ending buzzer-beater over Paul George in the 2019 playoffs?", ["Damian Lillard", "Russell Westbrook", "Kawhi Leonard", "CJ McCollum"], 0, "Lillard waved goodbye to the Thunder after sinking a 37-foot walk-off 3."),
-    ("What four-bounce shot at the buzzer eliminated the Philadelphia 76ers in Game 7 of the 2019 playoffs?", ["Kawhi Leonard's corner jumper", "Jimmy Butler's layup", "Kyle Lowry's 3-pointer", "Fred VanVleet's float"], 0, "Kawhi's shot bounced four times on the rim before dropping in."),
-    ("Who was the head coach of the San Antonio Spurs during all 5 of their championships?", ["Gregg Popovich", "Steve Kerr", "Larry Brown", "Erik Spoelstra"], 0, "Coach Pop is the all-time winningest coach in NBA history."),
-    ("Who was the long-time head coach of the Miami Heat leading them to 2 titles with the 'Heat Lesion' Big 3?", ["Erik Spoelstra", "Pat Riley", "Stan Van Gundy", "Frank Vogel"], 0, "Erik Spoelstra became head coach of Miami in 2008."),
-    ("Which team did Reggie Miller play his entire 18-season NBA career for?", ["Indiana Pacers", "New York Knicks", "Chicago Bulls", "UCLA"], 0, "Reggie Miller was the heartbeat of the Indiana Pacers."),
-    ("How many points did Reggie Miller score in 8.9 seconds to beat the Knicks in 1995?", ["8 points", "9 points", "6 points", "10 points"], 0, "Reggie scored 8 points in 8.9 seconds at Madison Square Garden."),
-    ("Who is the only player to win Finals MVP while playing for the losing team?", ["Jerry West (1969)", "LeBron James", "Michael Jordan", "Wilt Chamberlain"], 0, "Jerry West won Finals MVP in 1969 despite the Lakers losing to Boston."),
-    ("What player wore #24 and #8 for the Los Angeles Lakers, both of which were retired?", ["Kobe Bryant", "Magic Johnson", "Shaquille O'Neal", "Pau Gasol"], 0, "Kobe spent 10 seasons wearing #8 and 10 wearing #24."),
-    ("What college did LeBron James attend?", ["Did not attend college (Drafted from High School)", "Ohio State", "Akron", "Kentucky"], 0, "LeBron entered the 2003 draft directly from St. Vincent-St. Mary High School."),
-    ("What team won the inaugural NBA In-Season Tournament (NBA Cup) in 2023?", ["Los Angeles Lakers", "Indiana Pacers", "Milwaukee Bucks", "Boston Celtics"], 0, "The Lakers defeated the Pacers to win the first-ever NBA Cup."),
-    ("Who won the MVP of the 2023 In-Season Tournament?", ["LeBron James", "Anthony Davis", "Tyrese Haliburton", "Giannis Antetokounmpo"], 0, "LeBron James was awarded the first In-Season Tournament MVP."),
-    ("What team drafted James Worthy, Magic Johnson, and Kareem (trade)?", ["Los Angeles Lakers", "Boston Celtics", "Philadelphia 76ers", "Chicago Bulls"], 0, "The Lakers dominated the 1980s Showtime era."),
-    ("Which city did the Lakers play in before moving to Los Angeles in 1960?", ["Minneapolis", "Rochester", "Detroit", "Chicago"], 0, "The Minneapolis Lakers was where George Mikan won early titles."),
-    ("Which city did the Golden State Warriors originate in before moving to San Francisco / Oakland?", ["Philadelphia", "Baltimore", "San Diego", "Chicago"], 0, "The franchise began as the Philadelphia Warriors in 1946."),
-    ("Who was the famous head coach who led the 1972 Lakers to a 33-game winning streak?", ["Bill Sharman", "Pat Riley", "Phil Jackson", "Red Auerbach"], 0, "Bill Sharman coached the 1971-72 Lakers to 33 consecutive wins."),
-    ("What player won Defensive Player of the Year 4 times (tied record with Ben Wallace and Rudy Gobert)?", ["Dikembe Mutombo", "Dwight Howard", "Hakeem Olajuwon", "Dennis Rodman"], 0, "Dikembe Mutombo, Ben Wallace, and Rudy Gobert each won 4 DPOY awards."),
-    ("What wagging finger gesture was Dikembe Mutombo famous for after blocking a shot?", ["Finger wag 'No No No'", "Salute", "Silencer", "Thumb up"], 0, "Mutombo wagged his index finger at shooters after blocking them."),
-    ("Which NBA star was known for 'The Shammgod' crossover dribble move?", ["God Shammgod", "Tim Hardaway", "Allen Iverson", "Kyrie Irving"], 0, "God Shammgod popularized the famous crossover technique."),
-    ("Which player was famous for his 'UTEP Two-Step' crossover dribble in the 1990s?", ["Tim Hardaway", "Allen Iverson", "Isiah Thomas", "Rod Strickland"], 0, "Tim Hardaway Sr. popularized the killer crossover."),
-    ("Who scored the first-ever 3-point basket in NBA history in October 1979?", ["Chris Ford (Boston Celtics)", "Larry Bird", "Rick Barry", "Pete Maravich"], 0, "Chris Ford scored the first official 3-pointer on Oct 12, 1979."),
-    ("What college program produced Anthony Davis, Karl-Anthony Towns, and Devin Booker?", ["Kentucky (Wildcats)", "Duke", "Kansas", "UCLA"], 0, "John Calipari coached all three stars at the University of Kentucky."),
-    ("What high school did Kobe Bryant attend near Philadelphia?", ["Lower Merion High School", "Oak Hill Academy", "Sierra Canyon", "St. Vincent-St. Mary"], 0, "Kobe led Lower Merion to a state title before going pro."),
-]
-
-for item in nba_raw:
-    nba_questions.append({
-        "q": item[0],
-        "a": item[1],
-        "c": item[2],
-        "exp": item[3]
-    })
-
-print(f"Total Marvel Questions: {len(marvel_questions)}")
-print(f"Total Jurassic Questions: {len(jurassic_questions)}")
-print(f"Total NBA Questions: {len(nba_questions)}")
-
-quiz_data = {
-    "marvel": marvel_questions,
-    "jurassic": jurassic_questions,
-    "nba": nba_questions
-}
-
-# Write out index.html
-html_content = f"""<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Pop Culture Trivia Master</title>
+    <title>Ultimate Trivia Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {{
-            --bg-dark: #0d1117;
-            --card-bg: #161b22;
-            --card-border: #30363d;
-            --text-main: #f0f6fc;
-            --text-sub: #8b949e;
+        :root {
+            --primary-red: #e62429;
+            --primary-dark-red: #9f1115;
+            --primary-gold: #fbc02d;
+            --theme-dark: #151515;
+            --theme-grey: #202020;
+            --theme-light-grey: #333333;
+            --theme-white: #f0f0f0;
             
-            --marvel-color: #e23636;
-            --marvel-glow: rgba(226, 54, 54, 0.4);
-            
-            --jurassic-color: #e5a93c;
-            --jurassic-glow: rgba(229, 169, 60, 0.4);
-            
-            --nba-color: #1d428a;
-            --nba-accent: #c8102e;
-            --nba-glow: rgba(29, 66, 138, 0.5);
-            
-            --correct-color: #2ea043;
-            --incorrect-color: #da3633;
-        }}
+            /* Dynamic Accent Colors */
+            --accent-color: #e62429;
+            --accent-border: #fbc02d;
+            --accent-shadow: #9f1115;
+        }
 
-        * {{
+        * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }}
+        }
 
-        body {{
-            background-color: var(--bg-dark);
-            color: var(--text-main);
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--theme-dark);
+            color: var(--theme-white);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(226, 54, 54, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(229, 169, 60, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(29, 66, 138, 0.08) 0%, transparent 50%);
-        }}
+                radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 60%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            padding: 20px;
+        }
 
-        .container {{
+        .container {
             width: 100%;
-            max-width: 800px;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }}
-
-        /* Header / Brand */
-        .header {{
-            text-align: center;
-            margin-bottom: 28px;
-        }}
-
-        .header h1 {{
-            font-size: 2.2rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #fff 0%, #8b949e 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-        }}
-
-        .header p {{
-            color: var(--text-sub);
-            font-size: 1rem;
-        }}
-
-        /* Menu View */
-        #menu-screen {{
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }}
-
-        .category-title {{
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-sub);
-            text-align: center;
-            margin-bottom: 10px;
-        }}
-
-        .category-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-        }}
-
-        .category-card {{
-            background: #21262d;
-            border: 2px solid var(--card-border);
+            max-width: 680px;
+            background: var(--theme-grey);
+            border: 3px solid var(--accent-color);
             border-radius: 12px;
-            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--accent-color);
+            overflow: hidden;
+            position: relative;
+            transition: border-color 0.4s ease;
+        }
+
+        header {
+            background-color: var(--accent-color);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent-border);
+            position: relative;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+        }
+
+        h1 {
+            font-family: 'Bangers', cursive;
+            font-size: 3rem;
+            letter-spacing: 2px;
+            color: #fff;
+            text-shadow: 3px 3px 0px #000;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--accent-border);
+            text-transform: uppercase;
+            margin-top: 5px;
+            transition: color 0.4s ease;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        /* Screen States */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Menu Screen */
+        .menu-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .category-card {
+            background: var(--theme-light-grey);
+            border: 2px solid #444;
+            border-radius: 10px;
+            padding: 20px 15px;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-        }}
+        }
 
-        .category-card:hover {{
-            transform: translateY(-4px);
-        }}
+        .category-card:hover {
+            transform: translateY(-5px);
+            border-color: #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
 
-        .category-card.marvel:hover {{
-            border-color: var(--marvel-color);
-            box-shadow: 0 0 20px var(--marvel-glow);
-        }}
+        .category-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
 
-        .category-card.jurassic:hover {{
-            border-color: var(--jurassic-color);
-            box-shadow: 0 0 20px var(--jurassic-glow);
-        }}
+        .category-card .cat-title {
+            font-family: 'Bangers', cursive;
+            font-size: 1.6rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
 
-        .category-card.nba:hover {{
-            border-color: var(--nba-color);
-            box-shadow: 0 0 20px var(--nba-glow);
-        }}
-
-        .category-icon {{
-            font-size: 2.8rem;
-            margin-bottom: 12px;
-        }}
-
-        .category-name {{
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }}
-
-        .category-badge {{
+        .category-card .cat-desc {
             font-size: 0.8rem;
-            background: rgba(255,255,255,0.08);
-            padding: 4px 10px;
-            border-radius: 12px;
-            color: var(--text-sub);
-        }}
+            color: #aaa;
+            margin-top: 5px;
+        }
 
-        /* Quiz Settings Bar */
-        .quiz-opts {{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
+        .category-card.marvel-card:hover {
+            border-color: #e62429;
+            background: #2a1516;
+        }
+
+        .category-card.jurassic-card:hover {
+            border-color: #2e7d32;
+            background: #142415;
+        }
+
+        .category-card.nba-card:hover {
+            border-color: #f57c00;
+            background: #2a1f14;
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            text-align: center;
+        }
+
+        .welcome-screen p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #ccc;
+        }
+
+        .pool-info {
             margin-top: 15px;
-            background: #0d1117;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid var(--card-border);
-        }}
+            font-size: 0.85rem;
+            color: var(--accent-border);
+            font-style: italic;
+        }
 
-        .quiz-opts label {{
-            font-size: 0.9rem;
-            color: var(--text-sub);
-        }}
-
-        .quiz-opts select {{
-            background: #21262d;
-            color: #fff;
-            border: 1px solid var(--card-border);
-            padding: 6px 12px;
+        .btn {
+            background: var(--accent-color);
+            color: white;
+            font-family: 'Bangers', cursive;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            padding: 12px 28px;
+            border: 2px solid var(--accent-border);
             border-radius: 6px;
-            font-size: 0.9rem;
-            outline: none;
-        }}
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 0 var(--accent-shadow);
+            text-transform: uppercase;
+            display: inline-block;
+            margin: 5px;
+        }
 
-        /* Quiz View */
-        #quiz-screen {{
-            display: none;
-        }}
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 var(--accent-shadow);
+            filter: brightness(1.1);
+        }
 
-        .quiz-header {{
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--accent-shadow);
+        }
+
+        .btn-secondary {
+            background: #444;
+            border-color: #777;
+            box-shadow: 0 4px 0 #222;
+        }
+
+        .btn-secondary:hover {
+            background: #555;
+            box-shadow: 0 6px 0 #222;
+        }
+
+        /* Quiz Screen */
+        .quiz-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--card-border);
-        }}
-
-        .topic-tag {{
-            font-size: 0.85rem;
-            font-weight: 700;
-            padding: 4px 12px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }}
-
-        .topic-tag.marvel {{ background: var(--marvel-color); color: #fff; }}
-        .topic-tag.jurassic {{ background: var(--jurassic-color); color: #000; }}
-        .topic-tag.nba {{ background: var(--nba-color); color: #fff; }}
-
-        .score-counter {{
+            font-weight: bold;
             font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--text-sub);
-        }}
+            color: #aaa;
+            border-bottom: 1px solid var(--theme-light-grey);
+            padding-bottom: 10px;
+        }
 
-        .question-box {{
-            margin-bottom: 24px;
-        }}
+        .score-tracker {
+            color: var(--accent-border);
+        }
 
-        .question-text {{
-            font-size: 1.25rem;
-            font-weight: 600;
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--theme-light-grey);
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--accent-border);
+            transition: width 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 700;
             line-height: 1.4;
-            margin-bottom: 20px;
-        }}
+            margin-bottom: 25px;
+            color: #fff;
+        }
 
-        .options-grid {{
+        .options-container {
             display: flex;
             flex-direction: column;
             gap: 12px;
-        }}
+        }
 
-        .option-btn {{
-            background: #21262d;
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
+        .option-btn {
+            background: var(--theme-light-grey);
+            border: 2px solid #444;
+            color: #fff;
             padding: 14px 18px;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 1rem;
+            font-weight: 500;
             text-align: left;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: space-between;
-        }}
+        }
 
-        .option-btn:hover:not([disabled]) {{
-            background: #30363d;
-            border-color: #8b949e;
-        }}
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--accent-border);
+            background: #3d3d3d;
+            transform: translateX(4px);
+        }
 
-        .option-btn.correct {{
-            background: rgba(46, 160, 67, 0.2) !important;
-            border-color: var(--correct-color) !important;
-            color: #3fb950 !important;
-        }}
-
-        .option-btn.incorrect {{
-            background: rgba(218, 54, 51, 0.2) !important;
-            border-color: var(--incorrect-color) !important;
-            color: #f85149 !important;
-        }}
-
-        .explanation-box {{
-            margin-top: 20px;
-            padding: 14px 18px;
-            border-radius: 10px;
-            background: rgba(56, 139, 253, 0.1);
-            border: 1px solid rgba(56, 139, 253, 0.4);
-            color: #58a6ff;
-            font-size: 0.95rem;
-            display: none;
-            line-height: 1.4;
-        }}
-
-        .action-bar {{
-            margin-top: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }}
-
-        .btn {{
-            background: #238636;
+        .option-btn.correct {
+            background-color: #2e7d32 !important;
+            border-color: #4caf50 !important;
             color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }}
+        }
 
-        .btn:hover {{
-            background: #2ea043;
-        }}
+        .option-btn.incorrect {
+            background-color: #c62828 !important;
+            border-color: #ef5350 !important;
+            color: #fff;
+        }
 
-        .btn-secondary {{
-            background: #21262d;
-            color: var(--text-main);
-            border: 1px solid var(--card-border);
-        }}
+        .next-btn-container {
+            margin-top: 25px;
+            text-align: right;
+        }
 
-        .btn-secondary:hover {{
-            background: #30363d;
-        }}
-
-        /* Results Screen */
-        #results-screen {{
-            display: none;
+        /* Result Screen */
+        .result-screen {
             text-align: center;
-        }}
+        }
 
-        .result-score {{
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: #3fb950;
+        .result-score {
+            font-family: 'Bangers', cursive;
+            font-size: 4rem;
+            color: var(--accent-border);
             margin: 15px 0;
-        }}
+            text-shadow: 2px 2px 0 #000;
+        }
 
-        .result-message {{
-            font-size: 1.2rem;
-            color: var(--text-sub);
-            margin-bottom: 28px;
-        }}
+        .result-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
 
-        .results-stats {{
-            display: flex;
-            justify-content: space-around;
-            background: #0d1117;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid var(--card-border);
-            margin-bottom: 28px;
-        }}
+        .result-msg {
+            color: #ccc;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
 
-        .stat-item h3 {{
-            font-size: 1.5rem;
-            color: var(--text-main);
-        }}
+        /* Footer */
+        footer {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #777;
+            text-align: center;
+        }
 
-        .stat-item p {{
-            font-size: 0.85rem;
-            color: var(--text-sub);
-        }}
-
-        /* Progress Bar */
-        .progress-bar-container {{
-            width: 100%;
-            height: 6px;
-            background: #21262d;
-            border-radius: 3px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }}
-
-        .progress-bar {{
-            height: 100%;
-            width: 0%;
-            background: #3fb950;
-            transition: width 0.3s ease;
-        }}
+        @media (max-width: 500px) {
+            h1 { font-size: 2.2rem; }
+            .question-text { font-size: 1.1rem; }
+            .option-btn { font-size: 0.95rem; padding: 12px; }
+            .category-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="header">
-            <h1>Pop Culture Trivia Arena</h1>
-            <p>Test your knowledge with hundreds of randomized questions!</p>
-        </div>
+    <div class="container" id="quiz-container">
+        <header id="main-header">
+            <h1 id="header-title">TRIVIA ARENA</h1>
+            <div id="header-subtitle" class="subtitle">Choose Your Category</div>
+        </header>
 
-        <div id="menu-screen">
-            <div class="category-title">Select Your Challenge Subject</div>
-            
-            <div class="category-grid">
-                <div class="category-card marvel" onclick="startQuiz('marvel')">
-                    <div class="category-icon">⚡</div>
-                    <div class="category-name">Marvel Universe</div>
-                    <div class="category-badge">100+ Questions</div>
-                </div>
-
-                <div class="category-card jurassic" onclick="startQuiz('jurassic')">
-                    <div class="category-icon">🦖</div>
-                    <div class="category-name">Jurassic World</div>
-                    <div class="category-badge">100+ Questions</div>
-                </div>
-
-                <div class="category-card nba" onclick="startQuiz('nba')">
-                    <div class="category-icon">🏀</div>
-                    <div class="category-name">NBA Basketball</div>
-                    <div class="category-badge">100+ Questions</div>
-                </div>
-            </div>
-
-            <div class="quiz-opts">
-                <label for="question-count">Questions per session:</label>
-                <select id="question-count">
-                    <option value="10" selected>10 Questions</option>
-                    <option value="20">20 Questions</option>
-                    <option value="50">50 Questions</option>
-                    <option value="100">100 Questions (Marathon)</option>
-                </select>
-            </div>
-        </div>
-
-        <div id="quiz-screen">
-            <div class="progress-bar-container">
-                <div class="progress-bar" id="progress-bar"></div>
-            </div>
-
-            <div class="quiz-header">
-                <span id="topic-tag" class="topic-tag">Marvel</span>
-                <span id="question-progress" class="score-counter">Question 1/10</span>
-                <span id="live-score" class="score-counter">Score: 0</span>
-            </div>
-
-            <div class="question-box">
-                <div id="question-text" class="question-text">Question text goes here?</div>
-                <div id="options-grid" class="options-grid">
+        <div class="card-body">
+            <!-- Category Selection Menu Screen -->
+            <div id="menu-screen" class="screen active">
+                <div class="menu-title">Select a Trivia Category:</div>
+                <div class="category-grid">
+                    <div class="category-card marvel-card" onclick="selectCategory('marvel')">
+                        <div class="icon">🦸‍♂️</div>
+                        <div class="cat-title">Marvel</div>
+                        <div class="cat-desc">MCU, Comics & Heroes</div>
                     </div>
-                <div id="explanation-box" class="explanation-box">
-                    💡 <strong>Fact:</strong> <span id="explanation-text"></span>
+                    <div class="category-card jurassic-card" onclick="selectCategory('jurassic')">
+                        <div class="icon">🦖</div>
+                        <div class="cat-title">Jurassic World</div>
+                        <div class="cat-desc">Dinosaurs, Parks & Isla Nublar</div>
+                    </div>
+                    <div class="category-card nba-card" onclick="selectCategory('nba')">
+                        <div class="icon">🏀</div>
+                        <div class="cat-title">NBA</div>
+                        <div class="cat-desc">Legends, Records & Championships</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="action-bar">
-                <button class="btn btn-secondary" onclick="confirmQuit()">← Quit to Menu</button>
-                <button id="next-btn" class="btn" style="display: none;" onclick="nextQuestion()">Next Question →</button>
-            </div>
-        </div>
-
-        <div id="results-screen">
-            <h2>Quiz Complete!</h2>
-            <div id="final-score" class="result-score">8/10</div>
-            <div id="result-message" class="result-message">Impressive! You really know your stuff.</div>
-
-            <div class="results-stats">
-                <div class="stat-item">
-                    <h3 id="stat-accuracy">80%</h3>
-                    <p>Accuracy</p>
-                </div>
-                <div class="stat-item">
-                    <h3 id="stat-correct">8</h3>
-                    <p>Correct</p>
-                </div>
-                <div class="stat-item">
-                    <h3 id="stat-total">10</h3>
-                    <p>Total Played</p>
-                </div>
+            <!-- Welcome Screen for Selected Category -->
+            <div id="welcome-screen" class="screen welcome-screen">
+                <p id="welcome-text">Prepare to test your knowledge!</p>
+                <button id="start-btn" class="btn">Start Quiz</button>
+                <button id="back-to-menu-btn" class="btn btn-secondary">Change Category</button>
+                <div id="pool-status" class="pool-info"></div>
             </div>
 
-            <div style="display: flex; gap: 12px; justify-content: center;">
-                <button class="btn btn-secondary" onclick="returnToMenu()">Choose Another Subject</button>
-                <button class="btn" onclick="retryCurrentQuiz()">Play Again (New Questions)</button>
+            <!-- Quiz Screen -->
+            <div id="quiz-screen" class="screen">
+                <div class="quiz-header">
+                    <span id="question-count">Question 1/5</span>
+                    <span class="score-tracker">Score: <span id="current-score">0</span></span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+
+                <div id="question-text" class="question-text">Loading question...</div>
+                <div id="options-container" class="options-container">
+                    <!-- Dynamic option buttons go here -->
+                </div>
+
+                <div class="next-btn-container">
+                    <button id="next-btn" class="btn" style="display: none;">Next Question</button>
+                </div>
+            </div>
+
+            <!-- Result Screen -->
+            <div id="result-screen" class="screen result-screen">
+                <div id="result-title" class="result-title">QUIZ COMPLETE!</div>
+                <div id="result-score" class="result-score">5 / 5</div>
+                <div id="result-msg" class="result-msg">Great job!</div>
+                <button id="restart-btn" class="btn">Play Again</button>
+                <button id="result-menu-btn" class="btn btn-secondary">Main Menu</button>
             </div>
         </div>
     </div>
 
+    <footer>
+        Ultimate Trivia Challenge &bull; Test Your Knowledge
+    </footer>
+
     <script>
-        // Store all 300+ questions loaded from Python
-        const questionBank = {json.dumps(quiz_data)};
+        // Master Database categorized by domain
+        const triviaDatabase = {
+            marvel: {
+                title: "MARVEL TRIVIA",
+                subtitle: "Test Your MCU & Comic Knowledge",
+                color: "#e62429",
+                border: "#fbc02d",
+                shadow: "#9f1115",
+                questions: [
+                    { id: "m1", question: "What is the real name of Black Panther?", options: ["T'Challa", "M'Baku", "N'Jadaka", "W'Kabi"], answer: 0 },
+                    { id: "m2", question: "What metal is Captain America's shield made of?", options: ["Adamantium", "Vibranium", "Uru", "Promethium"], answer: 1 },
+                    { id: "m3", question: "What color is the Power Stone in the MCU?", options: ["Blue", "Red", "Purple", "Green"], answer: 2 },
+                    { id: "m4", question: "Who destroyed Thor's hammer Mjolnir in 'Thor: Ragnarok'?", options: ["Thanos", "Loki", "Odin", "Hela"], answer: 3 },
+                    { id: "m5", question: "What alien species does Carol Danvers gain her powers from/fight beside in Captain Marvel?", options: ["Skrulls", "Kree", "Chitauri", "Sovereign"], answer: 1 },
+                    { id: "m6", question: "What is the name of Tony Stark's AI assistant that replaces J.A.R.V.I.S.?", options: ["F.R.I.D.A.Y.", "K.A.R.E.N.", "E.D.I.T.H.", "H.O.M.E.R."], answer: 0 },
+                    { id: "m7", question: "In which fictional African nation is Black Panther set?", options: ["Genosha", "Sokovia", "Wakanda", "Madripoor"], answer: 2 },
+                    { id: "m8", question: "What is Doctor Strange's primary relic that holds the Time Stone?", options: ["Cloak of Levitation", "Eye of Agamotto", "Orb of Agamotto", "Book of Cagliostro"], answer: 1 },
+                    { id: "m9", question: "Which weapon does Thor forge in 'Avengers: Infinity War'?", options: ["Mjolnir", "Jarnbjorn", "Thunderstrike", "Stormbreaker"], answer: 3 },
+                    { id: "m10", question: "Who was responsible for creating the Avengers Initiative?", options: ["Tony Stark", "Nick Fury", "Alexander Pierce", "Phil Coulson"], answer: 1 },
+                    { id: "m11", question: "What is Peter Parker's best friend's name in the MCU Spider-Man trilogy?", options: ["Harry Osborn", "Ned Leeds", "Flash Thompson", "Miles Morales"], answer: 1 },
+                    { id: 12, question: "What realm is Loki from by birth?", options: ["Asgard", "Jotunheim", "Vanaheim", "Nidavellir"], answer: 1 },
+                    { id: "m13", question: "What species is Rocket from Guardians of the Galaxy?", options: ["Genetically modified raccoon", "Badger", "Red Panda", "Swarley"], answer: 0 },
+                    { id: "m14", question: "What metal is fused to Wolverine's skeleton?", options: ["Vibranium", "Promethium", "Adamantium", "Carbonantium"], answer: 2 },
+                    { id: "m15", question: "Who cut off Thanos's head in 'Avengers: Endgame'?", options: ["Captain America", "Iron Man", "Thor", "Captain Marvel"], answer: 2 }
+                ]
+            },
+            jurassic: {
+                title: "JURASSIC WORLD",
+                subtitle: "Dinosaurs & Park Lore",
+                color: "#1b5e20",
+                border: "#81c784",
+                shadow: "#0a320d",
+                questions: [
+                    { id: "j1", question: "What island is Jurassic Park built on?", options: ["Isla Sorna", "Isla Nublar", "Isla Matanceros", "Isla Pena"], answer: 1 },
+                    { id: "j2", question: "Who created the original Jurassic Park?", options: ["John Hammond", "Simon Masrani", "Dr. Henry Wu", "Dennis Nedry"], answer: 0 },
+                    { id: "j3", question: "What modified hybrid dinosaur was created as the main antagonist in Jurassic World (2015)?", options: ["Indoraptor", "Scorpios Rex", "Indominus Rex", "Spinosaurus"], answer: 2 },
+                    { id: "j4", question: "What is Owen Grady's profession in Jurassic World?", options: ["Paleontologist", "Velociraptor Trainer", "Park Operations Director", "Security Chief"], answer: 1 },
+                    { id: "j5", question: "What lead Velociraptor does Owen Grady share a bond with?", options: ["Charlie", "Delta", "Echo", "Blue"], answer: 3 },
+                    { id: "j6", question: "Which prehistoric creature is shown attacking park visitors from the aquatic arena?", options: ["Mosasaurus", "Plesiosaurus", "Megalodon", "Icthyosaurus"], answer: 0 },
+                    { id: "j7", question: "What genetic material was used to bridge the gaps in the dinosaur DNA sequence?", options: ["Frog DNA", "Lizard DNA", "Bird DNA", "Crocodile DNA"], answer: 0 },
+                    { id: "j8", question: "What corporation bought InGen and built Jurassic World?", options: ["BioSyn", "Masrani Global", "InGen Security", "Mantah Corp"], answer: 1 },
+                    { id: "j9", question: "Which hybrid dinosaur was designed for military combat in 'Jurassic World: Fallen Kingdom'?", options: ["Indominus Rex", "Indoraptor", "Stegoceratops", "Atrociraptor"], answer: 1 },
+                    { id: "j10", question: "What iconic phrase does Ian Malcolm repeat regarding nature?", options: ["Life finds a way", "Dinosaurs rule the earth", "Evolution is absolute", "Nature always wins"], answer: 0 }
+                ]
+            },
+            nba: {
+                title: "NBA TRIVIA",
+                subtitle: "Legends, Records & Hoops",
+                color: "#e65100",
+                border: "#ffb74d",
+                shadow: "#8c2d00",
+                questions: [
+                    { id: "n1", question: "Who holds the record for the most points scored in a single NBA game (100 pts)?", options: ["Michael Jordan", "Kobe Bryant", "Wilt Chamberlain", "LeBron James"], answer: 2 },
+                    { id: "n2", question: "Which NBA team has won the most championships in league history?", options: ["Los Angeles Lakers", "Boston Celtics", "Golden State Warriors", "Chicago Bulls"], answer: 1 },
+                    { id: "n3", question: "Who is the NBA's all-time leading scorer?", options: ["Kareem Abdul-Jabbar", "LeBron James", "Karl Malone", "Kobe Bryant"], answer: 1 },
+                    { id: "n4", question: "What player is featured on the official NBA logo outline?", options: ["Michael Jordan", "Jerry West", "Magic Johnson", "Larry Bird"], answer: 1 },
+                    { id: "n5", question: "Which team drafted Kobe Bryant in 1996 before trading him to the Lakers?", options: ["Charlotte Hornets", "Phoenix Suns", "New Jersey Nets", "Dallas Mavericks"], answer: 0 },
+                    { id: "n6", question: "Who won 6 NBA championships with the Chicago Bulls in the 1990s?", options: ["Shaquille O'Neal", "Michael Jordan", "Hakeem Olajuwon", "Tim Duncan"], answer: 1 },
+                    { id: "n7", question: "Which NBA player earned the nickname 'The Greek Freak'?", options: ["Nikola Jokić", "Luka Dončić", "Giannis Antetokounmpo", "Kristaps Porziņģis"], answer: 2 },
+                    { id: "n8", question: "How long is the NBA shot clock during standard gameplay?", options: ["20 seconds", "24 seconds", "30 seconds", "35 seconds"], answer: 1 },
+                    { id: "n9", question: "Which player won unanimous MVP honors in the 2015-2016 NBA season?", options: ["Stephen Curry", "LeBron James", "Kevin Durant", "James Harden"], answer: 0 },
+                    { id: "n10", question: "What team is known as 'Spurs'?", options: ["Dallas", "San Antonio", "Houston", "Phoenix"], answer: 1 }
+                ]
+            }
+        };
 
-        let currentCategory = '';
-        let activeQuestions = [];
-        let currentIndex = 0;
+        const QUESTIONS_PER_QUIZ = 5;
+        
+        // Track unasked question pools independently for each category
+        const unaskedPools = {
+            marvel: [...triviaDatabase.marvel.questions],
+            jurassic: [...triviaDatabase.jurassic.questions],
+            nba: [...triviaDatabase.nba.questions]
+        };
+
+        let currentCategoryKey = null;
+        let selectedQuestions = [];
+        let currentQuestionIndex = 0;
         let score = 0;
-        let answered = false;
+        let selectedOption = null;
 
-        // Shuffle array utility (Fisher-Yates)
+        // DOM Elements
+        const quizContainer = document.getElementById('quiz-container');
+        const mainHeader = document.getElementById('main-header');
+        const headerTitle = document.getElementById('header-title');
+        const headerSubtitle = document.getElementById('header-subtitle');
+
+        const menuScreen = document.getElementById('menu-screen');
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+
+        const welcomeText = document.getElementById('welcome-text');
+        const startBtn = document.getElementById('start-btn');
+        const backToMenuBtn = document.getElementById('back-to-menu-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const resultMenuBtn = document.getElementById('result-menu-btn');
+        const poolStatus = document.getElementById('pool-status');
+
+        const questionCountText = document.getElementById('question-count');
+        const currentScoreText = document.getElementById('current-score');
+        const progressBar = document.getElementById('progress-bar');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+
+        const resultTitle = document.getElementById('result-title');
+        const resultScore = document.getElementById('result-score');
+        const resultMsg = document.getElementById('result-msg');
+
+        // Event Listeners
+        startBtn.addEventListener('click', startQuiz);
+        backToMenuBtn.addEventListener('click', showMenu);
+        nextBtn.addEventListener('click', handleNextQuestion);
+        restartBtn.addEventListener('click', startQuiz);
+        resultMenuBtn.addEventListener('click', showMenu);
+
+        // Utility: Fisher-Yates Shuffle
         function shuffleArray(array) {
             const arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {{
+            for (let i = arr.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [arr[i], arr[j]] = [arr[j], arr[i]];
-            }}
+            }
             return arr;
-        }}
+        }
 
-        function startQuiz(category) {{
-            currentCategory = category;
-            const qCount = parseInt(document.getElementById('question-count').value);
-            
-            // Randomly select and shuffle questions
-            const pool = questionBank[category];
-            const shuffledPool = shuffleArray(pool);
-            activeQuestions = shuffledPool.slice(0, Math.min(qCount, pool.length));
+        // Apply Theme Colors
+        function applyTheme(color, border, shadow) {
+            document.documentElement.style.setProperty('--accent-color', color);
+            document.documentElement.style.setProperty('--accent-border', border);
+            document.documentElement.style.setProperty('--accent-shadow', shadow);
+        }
 
-            currentIndex = 0;
+        // Show Main Category Selection Menu
+        function showMenu() {
+            currentCategoryKey = null;
+            applyTheme('#e62429', '#fbc02d', '#9f1115'); // Default menu theme
+            headerTitle.textContent = "TRIVIA ARENA";
+            headerSubtitle.textContent = "Choose Your Category";
+
+            welcomeScreen.classList.remove('active');
+            quizScreen.classList.remove('active');
+            resultScreen.classList.remove('active');
+            menuScreen.classList.add('active');
+        }
+
+        // Handle Category Selection
+        function selectCategory(catKey) {
+            currentCategoryKey = catKey;
+            const category = triviaDatabase[catKey];
+
+            // Update Theme styling
+            applyTheme(category.color, category.border, category.shadow);
+            headerTitle.textContent = category.title;
+            headerSubtitle.textContent = category.subtitle;
+
+            // Setup Welcome text
+            welcomeText.textContent = `Test your knowledge in ${category.title}! Answer ${QUESTIONS_PER_QUIZ} random questions with no repeats.`;
+            updatePoolStatusText();
+
+            // Switch Screen
+            menuScreen.classList.remove('active');
+            welcomeScreen.classList.add('active');
+        }
+
+        function updatePoolStatusText() {
+            if (!currentCategoryKey) return;
+            const pool = unaskedPools[currentCategoryKey];
+            const total = triviaDatabase[currentCategoryKey].questions.length;
+            poolStatus.textContent = `Unseen Questions Remaining: ${pool.length} of ${total}`;
+        }
+
+        // Start Quiz
+        function startQuiz() {
+            if (!currentCategoryKey) return;
+
             score = 0;
+            currentQuestionIndex = 0;
+            currentScoreText.textContent = score;
 
-            // UI Setup
-            document.getElementById('menu-screen').style.display = 'none';
-            document.getElementById('results-screen').style.display = 'none';
-            document.getElementById('quiz-screen').style.display = 'block';
+            let pool = unaskedPools[currentCategoryKey];
+            const masterList = triviaDatabase[currentCategoryKey].questions;
 
-            // Tag style
-            const tag = document.getElementById('topic-tag');
-            tag.className = 'topic-tag ' + category;
-            if (category === 'marvel') tag.innerText = 'Marvel Universe';
-            else if (category === 'jurassic') tag.innerText = 'Jurassic World';
-            else if (category === 'nba') tag.innerText = 'NBA Basketball';
+            // Reset pool if remaining questions are fewer than required for a round
+            if (pool.length < QUESTIONS_PER_QUIZ) {
+                unaskedPools[currentCategoryKey] = [...masterList];
+                pool = unaskedPools[currentCategoryKey];
+            }
+
+            // Shuffle pool & select questions
+            const shuffledPool = shuffleArray(pool);
+            const rawSelected = shuffledPool.slice(0, QUESTIONS_PER_QUIZ);
+
+            // Remove selected questions from global unasked pool
+            const selectedIds = new Set(rawSelected.map(q => q.id));
+            unaskedPools[currentCategoryKey] = pool.filter(q => !selectedIds.has(q.id));
+
+            // Format questions and shuffle option choices
+            selectedQuestions = rawSelected.map(q => {
+                const originalOptions = [...q.options];
+                const correctAnswerText = originalOptions[q.answer];
+                const shuffledOptions = shuffleArray(originalOptions);
+                const newAnswerIndex = shuffledOptions.indexOf(correctAnswerText);
+
+                return {
+                    question: q.question,
+                    options: shuffledOptions,
+                    answer: newAnswerIndex
+                };
+            });
+
+            welcomeScreen.classList.remove('active');
+            resultScreen.classList.remove('active');
+            quizScreen.classList.add('active');
 
             loadQuestion();
-        }}
+        }
 
-        function loadQuestion() {{
-            answered = false;
-            const q = activeQuestions[currentIndex];
+        // Load Question UI
+        function loadQuestion() {
+            nextBtn.style.display = 'none';
+            selectedOption = null;
 
-            document.getElementById('question-progress').innerText = `Question ${{currentIndex + 1}}/${{activeQuestions.length}}`;
-            document.getElementById('live-score').innerText = `Score: ${{score}}`;
-            document.getElementById('question-text').innerText = q.q;
+            const q = selectedQuestions[currentQuestionIndex];
 
-            // Update Progress Bar
-            const progressPct = (currentIndex / activeQuestions.length) * 100;
-            document.getElementById('progress-bar').style.width = progressPct + '%';
+            // Progress Bar & Count
+            questionCountText.textContent = `Question ${currentQuestionIndex + 1}/${QUESTIONS_PER_QUIZ}`;
+            progressBar.style.width = `${((currentQuestionIndex) / QUESTIONS_PER_QUIZ) * 100}%`;
 
-            // Hide explanation & next button
-            document.getElementById('explanation-box').style.display = 'none';
-            document.getElementById('next-btn').style.display = 'none';
+            questionText.textContent = q.question;
 
-            // Prepare choices (and shuffle options while keeping track of correct index)
-            const optionsContainer = document.getElementById('options-grid');
+            // Clear and Render Options
             optionsContainer.innerHTML = '';
-
-            // Pair choices with original index
-            const optionsWithIndex = q.a.map((opt, idx) => ({{ text: opt, isCorrect: idx === q.c }}));
-            const shuffledOptions = shuffleArray(optionsWithIndex);
-
-            shuffledOptions.forEach((optObj) => {{
+            q.options.forEach((optText, index) => {
                 const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.innerText = optObj.text;
-                btn.onclick = () => selectOption(btn, optObj.isCorrect, q.exp);
+                btn.classList.add('option-btn');
+                btn.textContent = optText;
+                btn.addEventListener('click', () => selectOption(btn, index));
                 optionsContainer.appendChild(btn);
-            }});
-        }}
+            });
+        }
 
-        function selectOption(selectedBtn, isCorrect, explanation) {{
-            if (answered) return;
-            answered = true;
+        // Option Selection
+        function selectOption(btnElement, index) {
+            if (selectedOption !== null) return;
 
-            const allButtons = document.querySelectorAll('.option-btn');
-            allButtons.forEach(btn => btn.disabled = true);
+            selectedOption = index;
+            const q = selectedQuestions[currentQuestionIndex];
+            const allOptionBtns = optionsContainer.querySelectorAll('.option-btn');
 
-            if (isCorrect) {{
-                selectedBtn.classList.add('correct');
+            allOptionBtns.forEach(b => b.setAttribute('disabled', 'true'));
+
+            if (index === q.answer) {
+                btnElement.classList.add('correct');
                 score++;
-                document.getElementById('live-score').innerText = `Score: ${{score}}`;
-            }} else {{
-                selectedBtn.classList.add('incorrect');
-            }}
+                currentScoreText.textContent = score;
+            } else {
+                btnElement.classList.add('incorrect');
+                allOptionBtns[q.answer].classList.add('correct');
+            }
 
-            // Show explanation
-            document.getElementById('explanation-text').innerText = explanation;
-            document.getElementById('explanation-box').style.display = 'block';
-
-            // Show Next or Finish Button
-            const nextBtn = document.getElementById('next-btn');
-            if (currentIndex === activeQuestions.length - 1) {{
-                nextBtn.innerText = 'See Results 🎉';
-            }} else {{
-                nextBtn.innerText = 'Next Question →';
-            }}
             nextBtn.style.display = 'inline-block';
-        }}
+        }
 
-        function nextQuestion() {{
-            currentIndex++;
-            if (currentIndex < activeQuestions.length) {{
+        // Next Question Handler
+        function handleNextQuestion() {
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < QUESTIONS_PER_QUIZ) {
                 loadQuestion();
-            }} else {{
+            } else {
                 showResults();
-            }}
-        }}
+            }
+        }
 
-        function showResults() {{
-            document.getElementById('quiz-screen').style.display = 'none';
-            document.getElementById('results-screen').style.display = 'block';
+        // Show Results
+        function showResults() {
+            quizScreen.classList.remove('active');
+            resultScreen.classList.add('active');
 
-            const total = activeQuestions.length;
-            const accuracy = Math.round((score / total) * 100);
+            resultScore.textContent = `${score} / ${QUESTIONS_PER_QUIZ}`;
 
-            document.getElementById('final-score').innerText = `${{score}} / ${{total}}`;
-            document.getElementById('stat-accuracy').innerText = `${{accuracy}}%`;
-            document.getElementById('stat-correct').innerText = score;
-            document.getElementById('stat-total').innerText = total;
+            if (score === QUESTIONS_PER_QUIZ) {
+                resultTitle.textContent = "PERFECT SCORE!";
+                resultMsg.textContent = "Flawless performance! You are an absolute expert in this category.";
+            } else if (score >= Math.ceil(QUESTIONS_PER_QUIZ * 0.7)) {
+                resultTitle.textContent = "GREAT JOB!";
+                resultMsg.textContent = "Well played! You really know your stuff.";
+            } else if (score >= Math.ceil(QUESTIONS_PER_QUIZ * 0.4)) {
+                resultTitle.textContent = "NOT BAD!";
+                resultMsg.textContent = "A respectable score, but there is still room for improvement!";
+            } else {
+                resultTitle.textContent = "ROOKIE LEVEL";
+                resultMsg.textContent = "Better luck next time! Hit the books or rewatch some footage and try again.";
+            }
 
-            let msg = '';
-            if (accuracy === 100) msg = "🏆 Absolute Masterclass! You got every single question right!";
-            else if (accuracy >= 80) msg = "🌟 Outstanding knowledge! You're a true fan!";
-            else if (accuracy >= 60) msg = "👍 Solid effort! You know a good chunk of trivia.";
-            else msg = "📚 Keep practicing! Replay to sharpen your skills.";
-
-            document.getElementById('result-message').innerText = msg;
-        }}
-
-        function returnToMenu() {{
-            document.getElementById('results-screen').style.display = 'none';
-            document.getElementById('quiz-screen').style.display = 'none';
-            document.getElementById('menu-screen').style.display = 'flex';
-        }}
-
-        function retryCurrentQuiz() {{
-            startQuiz(currentCategory);
-        }}
-
-        function confirmQuit() {{
-            if (confirm("Are you sure you want to quit this quiz session?")) {{
-                returnToMenu();
-            }}
-        }}
+            updatePoolStatusText();
+        }
     </script>
 </body>
 </html>
-"""
-
-with open("index.html", "w", encoding="utf-8") as f:
-    f.write(html_content)
-
-print("index.html created successfully!")
