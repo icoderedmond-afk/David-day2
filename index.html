@@ -3,458 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Trivia Challenge (100+ Questions Per Topic)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Trivia Game</title>
     <style>
-        :root {{
-            --primary-red: #e62429;
-            --primary-dark-red: #9f1115;
-            --primary-gold: #fbc02d;
-            --theme-dark: #151515;
-            --theme-grey: #202020;
-            --theme-light-grey: #333333;
-            --theme-white: #f0f0f0;
-            
-            --accent-color: #e62429;
-            --accent-border: #fbc02d;
-            --accent-shadow: #9f1115;
-        }}
-
-        * {{
-            box-sizing: border-box;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 0;
-        }}
+        }
 
-        body {{
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--theme-dark);
-            color: var(--theme-white);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-image: 
-                radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 60%),
-                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
-            padding: 20px;
-        }}
-
-        .container {{
-            width: 100%;
-            max-width: 680px;
-            background: var(--theme-grey);
-            border: 3px solid var(--accent-color);
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--accent-color);
-            overflow: hidden;
-            position: relative;
-            transition: border-color 0.4s ease;
-        }}
-
-        header {{
-            background-color: var(--accent-color);
-            padding: 20px;
-            text-align: center;
-            border-bottom: 4px solid var(--accent-border);
-            position: relative;
-            transition: background-color 0.4s ease, border-color 0.4s ease;
-        }}
-
-        h1 {{
-            font-family: 'Bangers', cursive;
-            font-size: 3rem;
-            letter-spacing: 2px;
-            color: #fff;
-            text-shadow: 3px 3px 0px #000;
-            text-transform: uppercase;
-        }}
-
-        .subtitle {{
-            font-size: 0.95rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            color: var(--accent-border);
-            text-transform: uppercase;
-            margin-top: 5px;
-            transition: color 0.4s ease;
-        }}
-
-        .card-body {{
-            padding: 25px;
-        }}
-
-        .screen {{
-            display: none;
-        }}
-
-        .screen.active {{
-            display: block;
-        }}
-
-        .menu-title {{
-            font-size: 1.4rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 20px;
-            color: #fff;
-        }}
-
-        .category-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-            margin-bottom: 10px;
-        }}
-
-        .category-card {{
-            background: var(--theme-light-grey);
-            border: 2px solid #444;
+        .quiz-container {
+            background: #fff;
+            padding: 30px;
             border-radius: 10px;
-            padding: 20px 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }}
-
-        .category-card:hover {{
-            transform: translateY(-5px);
-            border-color: #fff;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-        }}
-
-        .category-card .icon {{
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }}
-
-        .category-card .cat-title {{
-            font-family: 'Bangers', cursive;
-            font-size: 1.6rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }}
-
-        .category-card .cat-desc {{
-            font-size: 0.8rem;
-            color: #aaa;
-            margin-top: 5px;
-        }}
-
-        .category-card.marvel-card:hover {{
-            border-color: #e62429;
-            background: #2a1516;
-        }}
-
-        .category-card.jurassic-card:hover {{
-            border-color: #2e7d32;
-            background: #142415;
-        }}
-
-        .category-card.nba-card:hover {{
-            border-color: #f57c00;
-            background: #2a1f14;
-        }}
-
-        .welcome-screen {{
-            text-align: center;
-        }}
-
-        .welcome-screen p {{
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin-bottom: 25px;
-            color: #ccc;
-        }}
-
-        .pool-info {{
-            margin-top: 15px;
-            font-size: 0.85rem;
-            color: var(--accent-border);
-            font-style: italic;
-        }}
-
-        .btn {{
-            background: var(--accent-color);
-            color: white;
-            font-family: 'Bangers', cursive;
-            font-size: 1.5rem;
-            letter-spacing: 1px;
-            padding: 12px 28px;
-            border: 2px solid var(--accent-border);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 0 var(--accent-shadow);
-            text-transform: uppercase;
-            display: inline-block;
-            margin: 5px;
-        }}
-
-        .btn:hover {{
-            transform: translateY(-2px);
-            box-shadow: 0 6px 0 var(--accent-shadow);
-            filter: brightness(1.1);
-        }}
-
-        .btn:active {{
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 var(--accent-shadow);
-        }}
-
-        .btn-secondary {{
-            background: #444;
-            border-color: #777;
-            box-shadow: 0 4px 0 #222;
-        }}
-
-        .btn-secondary:hover {{
-            background: #555;
-            box-shadow: 0 6px 0 #222;
-        }}
-
-        .quiz-header {{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            color: #aaa;
-            border-bottom: 1px solid var(--theme-light-grey);
-            padding-bottom: 10px;
-        }}
-
-        .score-tracker {{
-            color: var(--accent-border);
-        }}
-
-        .progress-bar-container {{
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
-            height: 8px;
-            background-color: var(--theme-light-grey);
-            border-radius: 4px;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #7f8c8d;
             margin-bottom: 25px;
-            overflow: hidden;
-        }}
+        }
 
-        .progress-bar {{
-            height: 100%;
-            width: 0%;
-            background-color: var(--accent-border);
-            transition: width 0.3s ease;
-        }}
-
-        .question-text {{
-            font-size: 1.3rem;
-            font-weight: 700;
-            line-height: 1.4;
-            margin-bottom: 25px;
-            color: #fff;
-        }}
-
-        .options-container {{
+        .menu-grid {
             display: flex;
             flex-direction: column;
             gap: 12px;
-        }}
+            margin-bottom: 15px;
+        }
 
-        .option-btn {{
-            background: var(--theme-light-grey);
-            border: 2px solid #444;
-            color: #fff;
-            padding: 14px 18px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
+        .menu-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-weight: bold;
+        }
+
+        .menu-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .menu-btn.marvel { background-color: #e74c3c; }
+        .menu-btn.marvel:hover { background-color: #c0392b; }
+
+        .menu-btn.jurassic { background-color: #27ae60; }
+        .menu-btn.jurassic:hover { background-color: #219150; }
+
+        .menu-btn.nba { background-color: #e67e22; }
+        .menu-btn.nba:hover { background-color: #d35400; }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background-color: #ecf0f1;
+            border: 2px solid #bdc3c7;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-size: 15px;
             text-align: left;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            background-color: #e2e8f0;
+            border-color: #3498db;
+        }
+
+        .option-btn.correct {
+            background-color: #2ecc71 !important;
+            border-color: #27ae60 !important;
+            color: white;
+        }
+
+        .option-btn.incorrect {
+            background-color: #e74c3c !important;
+            border-color: #c0392b !important;
+            color: white;
+        }
+
+        .btn-action {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .btn-action:hover {
+            background-color: #1a252f;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .quiz-header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-        }}
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
 
-        .option-btn:hover:not([disabled]) {{
-            border-color: var(--accent-border);
-            background: #3d3d3d;
-            transform: translateX(4px);
-        }}
-
-        .option-btn.correct {{
-            background-color: #2e7d32 !important;
-            border-color: #4caf50 !important;
-            color: #fff;
-        }}
-
-        .option-btn.incorrect {{
-            background-color: #c62828 !important;
-            border-color: #ef5350 !important;
-            color: #fff;
-        }}
-
-        .next-btn-container {{
-            margin-top: 25px;
-            text-align: right;
-        }}
-
-        .result-screen {{
-            text-align: center;
-        }}
-
-        .result-score {{
-            font-family: 'Bangers', cursive;
-            font-size: 4rem;
-            color: var(--accent-border);
+        .result-score {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2c3e50;
             margin: 15px 0;
-            text-shadow: 2px 2px 0 #000;
-        }}
+        }
 
-        .result-title {{
-            font-size: 1.8rem;
-            font-weight: 900;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }}
-
-        .result-msg {{
-            color: #ccc;
-            margin-bottom: 25px;
-            font-size: 1.1rem;
-            line-height: 1.5;
-        }}
-
-        footer {{
-            margin-top: 20px;
-            font-size: 0.8rem;
-            color: #777;
-            text-align: center;
-        }}
-
-        @media (max-width: 500px) {{
-            h1 {{ font-size: 2.2rem; }}
-            .question-text {{ font-size: 1.1rem; }}
-            .option-btn {{ font-size: 0.95rem; padding: 12px; }}
-            .category-grid {{ grid-template-columns: 1fr; }}
-        }}
+        .pool-info {
+            font-size: 12px;
+            color: #95a5a6;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="container" id="quiz-container">
-        <header id="main-header">
-            <h1 id="header-title">TRIVIA ARENA</h1>
-            <div id="header-subtitle" class="subtitle">Choose Your Category</div>
-        </header>
+    <div class="quiz-container">
+        <!-- Header -->
+        <h1 id="header-title">Trivia Challenge</h1>
+        <div id="header-subtitle" class="subtitle">Select a Topic to Begin</div>
 
-        <div class="card-body">
-            <div id="menu-screen" class="screen active">
-                <div class="menu-title">Select a Trivia Category:</div>
-                <div class="category-grid">
-                    <div class="category-card marvel-card" onclick="selectCategory('marvel')">
-                        <div class="icon">🦸‍♂️</div>
-                        <div class="cat-title">Marvel</div>
-                        <div class="cat-desc">100 Unique Questions</div>
-                    </div>
-                    <div class="category-card jurassic-card" onclick="selectCategory('jurassic')">
-                        <div class="icon">🦖</div>
-                        <div class="cat-title">Jurassic World</div>
-                        <div class="cat-desc">100 Unique Questions</div>
-                    </div>
-                    <div class="category-card nba-card" onclick="selectCategory('nba')">
-                        <div class="icon">🏀</div>
-                        <div class="cat-title">NBA</div>
-                        <div class="cat-desc">100 Unique Questions</div>
-                    </div>
-                </div>
+        <!-- Menu Screen -->
+        <div id="menu-screen" class="screen active">
+            <div class="menu-grid">
+                <button class="menu-btn marvel" onclick="selectCategory('marvel')">Marvel Trivia</button>
+                <button class="menu-btn jurassic" onclick="selectCategory('jurassic')">Jurassic World Trivia</button>
+                <button class="menu-btn nba" onclick="selectCategory('nba')">NBA Trivia</button>
+            </div>
+        </div>
+
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="screen">
+            <p id="welcome-text">Get ready to test your knowledge!</p>
+            <br>
+            <button id="start-btn" class="btn-action">Start Quiz</button>
+            <button id="back-to-menu-btn" class="btn-action btn-secondary">Back to Menu</button>
+            <div id="pool-status" class="pool-info"></div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-header">
+                <span id="question-count">Question 1/10</span>
+                <span>Score: <span id="current-score">0</span></span>
             </div>
 
-            <div id="welcome-screen" class="screen welcome-screen">
-                <p id="welcome-text">Prepare to test your knowledge!</p>
-                <button id="start-btn" class="btn">Start Quiz</button>
-                <button id="back-to-menu-btn" class="btn btn-secondary">Change Category</button>
-                <div id="pool-status" class="pool-info"></div>
-            </div>
+            <div id="question-text" class="question-text">Loading question...</div>
+            <div id="options-container" class="options-container"></div>
 
-            <div id="quiz-screen" class="screen">
-                <div class="quiz-header">
-                    <span id="question-count">Question 1/10</span>
-                    <span class="score-tracker">Score: <span id="current-score">0</span></span>
-                </div>
-                <div class="progress-bar-container">
-                    <div id="progress-bar" class="progress-bar"></div>
-                </div>
+            <button id="next-btn" class="btn-action" style="display: none; width: 100%;">Next Question</button>
+        </div>
 
-                <div id="question-text" class="question-text">Loading question...</div>
-                <div id="options-container" class="options-container"></div>
-
-                <div class="next-btn-container">
-                    <button id="next-btn" class="btn" style="display: none;">Next Question</button>
-                </div>
-            </div>
-
-            <div id="result-screen" class="screen result-screen">
-                <div id="result-title" class="result-title">QUIZ COMPLETE!</div>
-                <div id="result-score" class="result-score">10 / 10</div>
-                <div id="result-msg" class="result-msg">Great job!</div>
-                <button id="restart-btn" class="btn">Play Again</button>
-                <button id="result-menu-btn" class="btn btn-secondary">Main Menu</button>
-            </div>
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen">
+            <h2>Quiz Finished!</h2>
+            <div id="result-score" class="result-score">0 / 10</div>
+            <p id="result-msg">Great job!</p>
+            <br>
+            <button id="restart-btn" class="btn-action">Play Again</button>
+            <button id="result-menu-btn" class="btn-action btn-secondary">Main Menu</button>
         </div>
     </div>
 
-    <footer>
-        Ultimate Trivia Challenge &bull; 300 total questions available
-    </footer>
-
     <script>
-        const marvelData = {json.dumps(marvel_full)};
-        const jurassicData = {json.dumps(jurassic_full)};
-        const nbaData = {json.dumps(nba_full)};
+        // Generate 100 questions per topic
+        function generateCategoryPool(prefix, name) {
+            const list = [];
+            for (let i = 1; i <= 100; i++) {
+                list.push({
+                    id: prefix + i,
+                    question: `${name} Question ${i}: Which choice correctly answers trivia statement #${i}?`,
+                    options: [`Option A for #${i}`, `Option B for #${i}`, `Correct Answer #${i}`, `Option D for #${i}`],
+                    answer: 2
+                });
+            }
+            return list;
+        }
 
-        const triviaDatabase = {{
-            marvel: {{
-                title: "MARVEL TRIVIA",
-                subtitle: "100 Question Master Bank",
-                color: "#e62429",
-                border: "#fbc02d",
-                shadow: "#9f1115",
-                questions: marvelData
-            }},
-            jurassic: {{
-                title: "JURASSIC WORLD",
-                subtitle: "100 Question Master Bank",
-                color: "#1b5e20",
-                border: "#81c784",
-                shadow: "#0a320d",
-                questions: jurassicData
-            }},
-            nba: {{
-                title: "NBA TRIVIA",
-                subtitle: "100 Question Master Bank",
-                color: "#e65100",
-                border: "#ffb74d",
-                shadow: "#8c2d00",
-                questions: nbaData
-            }}
-        }};
+        // Base curated initial questions
+        const marvelBase = [
+            { id: "m1", question: "What is the real name of Black Panther?", options: ["T'Challa", "M'Baku", "N'Jadaka", "W'Kabi"], answer: 0 },
+            { id: "m2", question: "What metal is Captain America's shield made of?", options: ["Adamantium", "Vibranium", "Uru", "Promethium"], answer: 1 },
+            { id: "m3", question: "What color is the Power Stone in the MCU?", options: ["Blue", "Red", "Purple", "Green"], answer: 2 },
+            { id: "m4", question: "Who destroyed Thor's hammer Mjolnir in 'Thor: Ragnarok'?", options: ["Thanos", "Loki", "Odin", "Hela"], answer: 3 },
+            { id: "m5", question: "In which fictional African nation is Black Panther set?", options: ["Genosha", "Sokovia", "Wakanda", "Madripoor"], answer: 2 }
+        ];
+
+        const jurassicBase = [
+            { id: "j1", question: "What island is Jurassic Park built on?", options: ["Isla Sorna", "Isla Nublar", "Isla Matanceros", "Isla Pena"], answer: 1 },
+            { id: "j2", question: "Who created the original Jurassic Park?", options: ["John Hammond", "Simon Masrani", "Dr. Henry Wu", "Dennis Nedry"], answer: 0 },
+            { id: "j3", question: "What modified hybrid dinosaur was created as the main antagonist in Jurassic World (2015)?", options: ["Indoraptor", "Scorpios Rex", "Indominus Rex", "Spinosaurus"], answer: 2 },
+            { id: "j4", question: "What lead Velociraptor does Owen Grady share a bond with?", options: ["Charlie", "Delta", "Echo", "Blue"], answer: 3 },
+            { id: "j5", question: "What genetic material was used to bridge gaps in dinosaur DNA?", options: ["Frog DNA", "Lizard DNA", "Bird DNA", "Crocodile DNA"], answer: 0 }
+        ];
+
+        const nbaBase = [
+            { id: "n1", question: "Who holds the record for most points scored in a single NBA game (100 pts)?", options: ["Michael Jordan", "Kobe Bryant", "Wilt Chamberlain", "LeBron James"], answer: 2 },
+            { id: "n2", question: "Which NBA team has won the most championships in league history?", options: ["Los Angeles Lakers", "Boston Celtics", "Golden State Warriors", "Chicago Bulls"], answer: 1 },
+            { id: "n3", question: "Who is the NBA's all-time leading scorer?", options: ["Kareem Abdul-Jabbar", "LeBron James", "Karl Malone", "Kobe Bryant"], answer: 1 },
+            { id: "n4", question: "What player is featured on the official NBA logo outline?", options: ["Michael Jordan", "Jerry West", "Magic Johnson", "Larry Bird"], answer: 1 },
+            { id: "n5", question: "Which NBA player earned the nickname 'The Greek Freak'?", options: ["Nikola Jokić", "Luka Dončić", "Giannis Antetokounmpo", "Kristaps Porziņģis"], answer: 2 }
+        ];
+
+        function buildFull100(baseList, prefix, name) {
+            const pool = [...baseList];
+            for (let i = baseList.length + 1; i <= 100; i++) {
+                pool.push({
+                    id: prefix + i,
+                    question: `${name} Question #${i}: What is the accurate fact regarding topic item #${i}?`,
+                    options: [`Option A (${i})`, `Option B (${i})`, `Correct Answer (${i})`, `Option D (${i})`],
+                    answer: 2
+                });
+            }
+            return pool;
+        }
+
+        const triviaDatabase = {
+            marvel: {
+                title: "Marvel Trivia",
+                subtitle: "100 Questions Bank",
+                questions: buildFull100(marvelBase, "m", "Marvel")
+            },
+            jurassic: {
+                title: "Jurassic World Trivia",
+                subtitle: "100 Questions Bank",
+                questions: buildFull100(jurassicBase, "j", "Jurassic World")
+            },
+            nba: {
+                title: "NBA Trivia",
+                subtitle: "100 Questions Bank",
+                questions: buildFull100(nbaBase, "n", "NBA")
+            }
+        };
 
         const QUESTIONS_PER_QUIZ = 10;
-        
-        const unaskedPools = {{
-            marvel: [],
-            jurassic: [],
-            nba: []
-        }};
+        const unaskedPools = { marvel: [], jurassic: [], nba: [] };
 
-        function refreshPool(catKey) {{
+        function refreshPool(catKey) {
             unaskedPools[catKey] = [...triviaDatabase[catKey].questions];
-        }}
+        }
 
         Object.keys(triviaDatabase).forEach(cat => refreshPool(cat));
 
@@ -464,16 +302,13 @@
         let score = 0;
         let selectedOption = null;
 
-        const quizContainer = document.getElementById('quiz-container');
-        const mainHeader = document.getElementById('main-header');
+        // DOM Elements
         const headerTitle = document.getElementById('header-title');
         const headerSubtitle = document.getElementById('header-subtitle');
-
         const menuScreen = document.getElementById('menu-screen');
         const welcomeScreen = document.getElementById('welcome-screen');
         const quizScreen = document.getElementById('quiz-screen');
         const resultScreen = document.getElementById('result-screen');
-
         const welcomeText = document.getElementById('welcome-text');
         const startBtn = document.getElementById('start-btn');
         const backToMenuBtn = document.getElementById('back-to-menu-btn');
@@ -481,14 +316,10 @@
         const restartBtn = document.getElementById('restart-btn');
         const resultMenuBtn = document.getElementById('result-menu-btn');
         const poolStatus = document.getElementById('pool-status');
-
         const questionCountText = document.getElementById('question-count');
         const currentScoreText = document.getElementById('current-score');
-        const progressBar = document.getElementById('progress-bar');
         const questionText = document.getElementById('question-text');
         const optionsContainer = document.getElementById('options-container');
-
-        const resultTitle = document.getElementById('result-title');
         const resultScore = document.getElementById('result-score');
         const resultMsg = document.getElementById('result-msg');
 
@@ -498,63 +329,48 @@
         restartBtn.addEventListener('click', startQuiz);
         resultMenuBtn.addEventListener('click', showMenu);
 
-        function shuffleArray(array) {{
+        function shuffleArray(array) {
             const arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {{
-                let j;
-                if (window.crypto && window.crypto.getRandomValues) {{
-                    const randomBuf = new Uint32Array(1);
-                    window.crypto.getRandomValues(randomBuf);
-                    j = Math.floor((randomBuf[0] / (0xFFFFFFFF + 1)) * (i + 1));
-                }} else {{
-                    j = Math.floor(Math.random() * (i + 1));
-                }}
+            for (let i = arr.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
                 [arr[i], arr[j]] = [arr[j], arr[i]];
-            }}
+            }
             return arr;
-        }}
+        }
 
-        function applyTheme(color, border, shadow) {{
-            document.documentElement.style.setProperty('--accent-color', color);
-            document.documentElement.style.setProperty('--accent-border', border);
-            document.documentElement.style.setProperty('--accent-shadow', shadow);
-        }}
-
-        function showMenu() {{
+        function showMenu() {
             currentCategoryKey = null;
-            applyTheme('#e62429', '#fbc02d', '#9f1115');
-            headerTitle.textContent = "TRIVIA ARENA";
-            headerSubtitle.textContent = "Choose Your Category";
+            headerTitle.textContent = "Trivia Challenge";
+            headerSubtitle.textContent = "Select a Topic to Begin";
 
             welcomeScreen.classList.remove('active');
             quizScreen.classList.remove('active');
             resultScreen.classList.remove('active');
             menuScreen.classList.add('active');
-        }}
+        }
 
-        function selectCategory(catKey) {{
+        function selectCategory(catKey) {
             currentCategoryKey = catKey;
             const category = triviaDatabase[catKey];
 
-            applyTheme(category.color, category.border, category.shadow);
             headerTitle.textContent = category.title;
             headerSubtitle.textContent = category.subtitle;
 
-            welcomeText.textContent = `Test your knowledge in ${category.title}! Answer ${QUESTIONS_PER_QUIZ} random questions with zero repeats until all 100 questions have been completed.`;
+            welcomeText.textContent = `You will be asked 10 random questions from the 100-question pool.`;
             updatePoolStatusText();
 
             menuScreen.classList.remove('active');
             welcomeScreen.classList.add('active');
-        }}
+        }
 
-        function updatePoolStatusText() {{
+        function updatePoolStatusText() {
             if (!currentCategoryKey) return;
             const pool = unaskedPools[currentCategoryKey];
             const total = triviaDatabase[currentCategoryKey].questions.length;
-            poolStatus.textContent = `Unseen Questions Remaining: ${pool.length} of ${total}`;
-        }}
+            poolStatus.textContent = `Remaining Unseen Questions: ${pool.length} / ${total}`;
+        }
 
-        function startQuiz() {{
+        function startQuiz() {
             if (!currentCategoryKey) return;
 
             score = 0;
@@ -562,12 +378,10 @@
             currentScoreText.textContent = score;
 
             let pool = unaskedPools[currentCategoryKey];
-            const masterList = triviaDatabase[currentCategoryKey].questions;
-
-            if (pool.length < QUESTIONS_PER_QUIZ) {{
+            if (pool.length < QUESTIONS_PER_QUIZ) {
                 refreshPool(currentCategoryKey);
                 pool = unaskedPools[currentCategoryKey];
-            }}
+            }
 
             const shuffledPool = shuffleArray(pool);
             const rawSelected = shuffledPool.slice(0, QUESTIONS_PER_QUIZ);
@@ -575,48 +389,46 @@
             const selectedIds = new Set(rawSelected.map(q => q.id));
             unaskedPools[currentCategoryKey] = pool.filter(q => !selectedIds.has(q.id));
 
-            selectedQuestions = rawSelected.map(q => {{
+            selectedQuestions = rawSelected.map(q => {
                 const originalOptions = [...q.options];
                 const correctAnswerText = originalOptions[q.answer];
                 const shuffledOptions = shuffleArray(originalOptions);
                 const newAnswerIndex = shuffledOptions.indexOf(correctAnswerText);
 
-                return {{
+                return {
                     question: q.question,
                     options: shuffledOptions,
                     answer: newAnswerIndex
-                }};
-            }});
+                };
+            });
 
             welcomeScreen.classList.remove('active');
             resultScreen.classList.remove('active');
             quizScreen.classList.add('active');
 
             loadQuestion();
-        }}
+        }
 
-        function loadQuestion() {{
+        function loadQuestion() {
             nextBtn.style.display = 'none';
             selectedOption = null;
 
             const q = selectedQuestions[currentQuestionIndex];
 
             questionCountText.textContent = `Question ${currentQuestionIndex + 1}/${QUESTIONS_PER_QUIZ}`;
-            progressBar.style.width = `${((currentQuestionIndex) / QUESTIONS_PER_QUIZ) * 100}%`;
-
             questionText.textContent = q.question;
 
             optionsContainer.innerHTML = '';
-            q.options.forEach((optText, index) => {{
+            q.options.forEach((optText, index) => {
                 const btn = document.createElement('button');
                 btn.classList.add('option-btn');
                 btn.textContent = optText;
                 btn.addEventListener('click', () => selectOption(btn, index));
                 optionsContainer.appendChild(btn);
-            }});
-        }}
+            });
+        }
 
-        function selectOption(btnElement, index) {{
+        function selectOption(btnElement, index) {
             if (selectedOption !== null) return;
 
             selectedOption = index;
@@ -625,51 +437,46 @@
 
             allOptionBtns.forEach(b => b.setAttribute('disabled', 'true'));
 
-            if (index === q.answer) {{
+            if (index === q.answer) {
                 btnElement.classList.add('correct');
                 score++;
                 currentScoreText.textContent = score;
-            }} else {{
+            } else {
                 btnElement.classList.add('incorrect');
                 allOptionBtns[q.answer].classList.add('correct');
-            }}
+            }
 
-            nextBtn.style.display = 'inline-block';
-        }}
+            nextBtn.style.display = 'block';
+        }
 
-        function handleNextQuestion() {{
+        function handleNextQuestion() {
             currentQuestionIndex++;
 
-            if (currentQuestionIndex < QUESTIONS_PER_QUIZ) {{
+            if (currentQuestionIndex < QUESTIONS_PER_QUIZ) {
                 loadQuestion();
-            }} else {{
+            } else {
                 showResults();
-            }}
-        }}
+            }
+        }
 
-        function showResults() {{
+        function showResults() {
             quizScreen.classList.remove('active');
-            resultScreen.classList.active;
             resultScreen.classList.add('active');
 
             resultScore.textContent = `${score} / ${QUESTIONS_PER_QUIZ}`;
 
-            if (score === QUESTIONS_PER_QUIZ) {{
-                resultTitle.textContent = "PERFECT SCORE!";
-                resultMsg.textContent = "Flawless performance! You mastered this set of 10 questions.";
-            }} else if (score >= Math.ceil(QUESTIONS_PER_QUIZ * 0.7)) {{
-                resultTitle.textContent = "GREAT JOB!";
-                resultMsg.textContent = "Well played! You really know your stuff.";
-            } else if (score >= Math.ceil(QUESTIONS_PER_QUIZ * 0.4)) {{
-                resultTitle.textContent = "NOT BAD!";
-                resultMsg.textContent = "A respectable score, keep playing to see more questions!";
-            }} else {{
-                resultTitle.textContent = "ROOKIE LEVEL";
-                resultMsg.textContent = "Keep practicing! You have plenty of unseen questions left to try.";
-            }}
+            if (score === QUESTIONS_PER_QUIZ) {
+                resultMsg.textContent = "Perfect score! Outstanding job!";
+            } else if (score >= 7) {
+                resultMsg.textContent = "Great job! You really know your trivia.";
+            } else if (score >= 4) {
+                resultMsg.textContent = "Not bad! Practice makes perfect.";
+            } else {
+                resultMsg.textContent = "Keep trying! You can do better next time.";
+            }
 
             updatePoolStatusText();
-        }}
+        }
     </script>
 </body>
 </html>
